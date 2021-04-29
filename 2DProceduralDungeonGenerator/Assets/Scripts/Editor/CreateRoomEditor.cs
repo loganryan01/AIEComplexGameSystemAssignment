@@ -60,6 +60,12 @@ public class CreateRoomEditor : EditorWindow
         // Get the additional tiles list
         numberOfAdditionalTiles = EditorGUI.IntField(new Rect(0, 45, position.width, 15), "Number of additional tiles", numberOfAdditionalTiles);
 
+        // If there are meant to be no additional tiles, clear the whole list
+        if (numberOfAdditionalTiles == 0)
+        {
+            additionalTiles.Clear();
+        }
+
         if (numberOfAdditionalTiles > 0)
         {
             // Increase size of list
@@ -71,7 +77,7 @@ public class CreateRoomEditor : EditorWindow
             // Decrease size of list
             while (additionalTiles.Count > numberOfAdditionalTiles)
             {
-                
+                additionalTiles.RemoveAt(additionalTiles.Count - 1);
             }
 
             for (int i = 0; i < numberOfAdditionalTiles; i++)
