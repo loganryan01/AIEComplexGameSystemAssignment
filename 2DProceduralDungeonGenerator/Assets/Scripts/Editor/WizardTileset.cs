@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Tilemaps;
-using UnityEditor.Tilemaps;
 using System.IO;
 
 public class WizardTileset : ScriptableWizard
@@ -19,7 +18,7 @@ public class WizardTileset : ScriptableWizard
     public TileBase bottomRightCornerWallTile;
     public TileBase voidTile;
 
-    [MenuItem("DungeonGenerator/SetTileset")]
+    [MenuItem("DungeonGenerator/Set Tileset")]
     static void CreateWizard()
     {
         ScriptableWizard.DisplayWizard<WizardTileset>("Tileset", "Save");
