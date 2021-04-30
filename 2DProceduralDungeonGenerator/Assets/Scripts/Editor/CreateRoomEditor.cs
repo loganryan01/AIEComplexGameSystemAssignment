@@ -21,27 +21,26 @@ public class CreateRoomEditor : EditorWindow
 {
     private int width;
     private int height;
+    private int numberOfAdditionalTiles;
+
+    protected string text = " ";
+    private string name = "Room";
 
     private GameObject room;
-
     private GameObject floorTiles;
     private GameObject wallTiles;
     private GameObject additionalTilesPreview;
     private GameObject allTilesPreview;
     
     private List<TileBase> tiles = new List<TileBase>();
-
-    private int numberOfAdditionalTiles;
     private List<AdditionalTiles> additionalTiles = new List<AdditionalTiles>();
 
     protected StreamReader reader = null;
-    protected string text = " ";
 
     [MenuItem("DungeonGenerator/Create Room")]
     static void ShowWindow()
     {
         GetWindow<CreateRoomEditor>("Create Room Editor");
-        
     }
 
     private void OnGUI()
@@ -54,11 +53,13 @@ public class CreateRoomEditor : EditorWindow
 
         //===== ROOM CREATION =====
         // Get the width and height of the room
-        width = EditorGUI.IntField(new Rect(0, 5, position.width, 15), "Width", width);
-        height = EditorGUI.IntField(new Rect(0, 25, position.width, 15), "Height", height);
+        EditorGUI.BeginChangeCheck();
+        name = EditorGUI.TextField(new Rect(0, 5, position.width, 15), "Room Name: ", name);
+        width = EditorGUI.IntField(new Rect(0, 25, position.width, 15), "Width", width);
+        height = EditorGUI.IntField(new Rect(0, 45, position.width, 15), "Height", height);
 
         // Get the additional tiles list
-        numberOfAdditionalTiles = EditorGUI.IntField(new Rect(0, 45, position.width, 15), "Number of additional tiles", numberOfAdditionalTiles);
+        numberOfAdditionalTiles = EditorGUI.IntField(new Rect(0, 65, position.width, 15), "Number of additional tiles", numberOfAdditionalTiles);
 
         // If there are meant to be no additional tiles, clear the whole list
         if (numberOfAdditionalTiles == 0)
@@ -83,15 +84,13 @@ public class CreateRoomEditor : EditorWindow
             for (int i = 0; i < numberOfAdditionalTiles; i++)
             {
                 // Display tilebase box for each additional tile
-                additionalTiles[i].tile = (TileBase)EditorGUI.ObjectField(new Rect(0, 25 * i + 65, position.width - 180, 20), "Tile: ", additionalTiles[i].tile, typeof(TileBase), true);
-                additionalTiles[i].position = 
-                    EditorGUI.Vector3IntField(new Rect(position.width - 170, 25 * i + 65, position.width - 360, 20), "", additionalTiles[i].position);
+                additionalTiles[i].tile = (TileBase)EditorGUI.ObjectField(new Rect(0, 25 * i + 85, position.width - 180, 20), "Tile: ", additionalTiles[i].tile, typeof(TileBase), true);
+                additionalTiles[i].position =
+                    EditorGUI.Vector3IntField(new Rect(position.width - 170, 25 * i + 85, position.width - 360, 20), "", additionalTiles[i].position);
             }
         }
 
-        // Once the width and height have been set,
-        // Create a preview of the room 
-        if (width > 0 && height > 0)
+        if (EditorGUI.EndChangeCheck())
         {
             DisableAllTiles();
 
@@ -99,6 +98,13 @@ public class CreateRoomEditor : EditorWindow
             {
                 PreviewAllTiles();
             }
+        }
+
+        EditorGUILayout.Space(25 * numberOfAdditionalTiles + 85);
+
+        if (GUILayout.Button("Create"))
+        {
+            CreateRoom();
         }
     }
 
@@ -230,7 +236,7 @@ public class CreateRoomEditor : EditorWindow
 
     private void CreateRoom()
     {
-        room = new GameObject("Room");
+        room = new GameObject(name);
 
         GameObject tileGridForFloors = new GameObject("Floors");
         tileGridForFloors.AddComponent<Tilemap>();
@@ -244,12 +250,79 @@ public class CreateRoomEditor : EditorWindow
             }
         }
 
-        tileGridForFloors.transform.SetParent(room.transform);
+        GameObject tileGridForWalls = new GameObject("Walls");
+        tileGridForWalls.AddComponent<Tilemap>();
+        tileGridForWalls.AddComponent<TilemapRenderer>();
+        tileGridForWalls.AddComponent<TilemapCollider2D>();
+        tileGridForWalls.GetComponent<TilemapRenderer>().sortingOrder = 1;
 
-        string localPath = "Assets/" + room.name + ".prefab";
+        int maxX = width - 1;
+        int maxY = height - 1;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                switch (y)
+                {
+                    case 0 when x == 0:
+                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tiles[7]);
+                        break;
+                    case 0 when x < maxX:
+                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tiles[4]);
+                        break;
+                    case 0 when x == maxX:
+                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tiles[8]);
+                        break;
+                    default:
+                        if (x == 0)
+                        {
+                            tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tiles[1]);
+                        }
+
+                        if (x == maxX)
+                        {
+                            tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tiles[2]);
+                        }
+                        break;
+                }
+
+                if (y == maxY && x == 0)
+                    tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tiles[5]);
+                else if (y == maxY && x < maxX)
+                    tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tiles[3]);
+                else if (y == maxY && x == maxX)
+                    tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tiles[6]);
+
+            }
+        }
+
+        GameObject tileGridForAdditional = new GameObject("AdditionalTiles");
+        tileGridForAdditional.AddComponent<Tilemap>();
+        tileGridForAdditional.AddComponent<TilemapRenderer>();
+        tileGridForAdditional.AddComponent<TilemapCollider2D>();
+        tileGridForAdditional.GetComponent<TilemapRenderer>().sortingOrder = 2;
+
+        foreach (var additionalTile in additionalTiles)
+        {
+            tileGridForAdditional.GetComponent<Tilemap>().SetTile(additionalTile.position, additionalTile.tile);
+        }
+
+        tileGridForFloors.transform.SetParent(room.transform);
+        tileGridForWalls.transform.SetParent(room.transform);
+        tileGridForAdditional.transform.SetParent(room.transform);
+
+        if (!AssetDatabase.IsValidFolder("Assets/Prefabs/Rooms"))
+        {
+            AssetDatabase.CreateFolder("Assets/Prefabs", "Rooms");
+        }
+
+        string localPath = "Assets/Prefabs/Rooms/" + room.name + ".prefab";
         localPath = AssetDatabase.GenerateUniqueAssetPath(localPath);
         PrefabUtility.SaveAsPrefabAsset(room, localPath);
 
         DestroyImmediate(room);
+
+        Close();
     }
 }
