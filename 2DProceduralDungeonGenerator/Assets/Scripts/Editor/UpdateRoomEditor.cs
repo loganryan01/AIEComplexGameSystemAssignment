@@ -36,7 +36,52 @@ public class UpdateRoomEditor : EditorWindow
     private void OnGUI()
     {
         // Get a room prefab
+        EditorGUI.BeginChangeCheck();
         room = (GameObject)EditorGUI.ObjectField(new Rect(0, 5, position.width, 20), "Room Prefab: ", room, typeof(GameObject), true);
+        if (EditorGUI.EndChangeCheck())
+        {
+            additionalTiles.Clear();
+            numberOfAdditionalTiles = 0;
+            
+            // Get the name of the room
+            roomName = room.name;
+
+            // Get the width and height of the prefab
+            BoundsInt bounds = room.GetComponentInChildren<Tilemap>().cellBounds;
+
+            width = bounds.size.x;
+            height = bounds.size.y;
+
+            // Get number of additional tiles and what tiles have been used
+            Tilemap[] tilemap = room.GetComponentsInChildren<Tilemap>();
+            TileBase[] tileArray = tilemap[2].GetTilesBlock(bounds);
+
+            int xPos = 0;
+            int yPos = 0;
+            for (int index = 0; index < tileArray.Length; index++)
+            {
+                if (tileArray[index] != null)
+                {
+                    numberOfAdditionalTiles++;
+                    additionalTiles.Add(new AdditionalTiles(tileArray[index], new Vector3Int(xPos, yPos, 0)));
+                }
+
+                xPos++;
+
+                if (xPos >= width)
+                {
+                    xPos = 0;
+                    yPos++;
+                }
+            }
+
+            DisableAllTiles();
+
+            if (allTilesPreview == null)
+            {
+                PreviewAllTiles();
+            }
+        }
 
         // Get Tile Palette
         if (tiles.Count == 0)
@@ -46,52 +91,6 @@ public class UpdateRoomEditor : EditorWindow
 
         if (room != null)
         {
-            if (!gotData)
-            {
-                // Get the name of the room
-                roomName = room.name;
-                
-                // Get the width and height of the prefab
-                BoundsInt bounds = room.GetComponentInChildren<Tilemap>().cellBounds;
-
-                width = bounds.size.x;
-                height = bounds.size.y;
-
-                // Get number of additional tiles and what tiles have been used
-                Tilemap[] tilemap = room.GetComponentsInChildren<Tilemap>();
-                TileBase[] tileArray = tilemap[2].GetTilesBlock(bounds);
-
-                int xPos = 0;
-                int yPos = 0;
-                for (int index = 0; index < tileArray.Length; index++)
-                {
-                    if (tileArray[index] != null)
-                    {
-                        numberOfAdditionalTiles++;
-                        
-
-                        // Check if the tile exists in the list
-                        if (additionalTiles.Count == 0)
-                        {
-                            additionalTiles.Add(new AdditionalTiles(tileArray[index], new Vector3Int(xPos, yPos, 0)));
-                        }
-                    }
-
-                    xPos++;
-
-                    if (xPos >= width)
-                    {
-                        xPos = 0;
-                        yPos++;
-                    }
-                }
-
-                gotData = true;
-
-                PreviewAllTiles();
-            }
-
-
             // Get the width and height of the room
             EditorGUI.BeginChangeCheck();
             roomName = EditorGUI.TextField(new Rect(0, 30, position.width, 20), "Room Name: ", roomName);
@@ -278,6 +277,14 @@ public class UpdateRoomEditor : EditorWindow
 
     private void UpdateRoom()
     {
+        string[] results = AssetDatabase.FindAssets(roomName);
+
+        foreach (var guid in results)
+        {
+            string roomPath = AssetDatabase.GUIDToAssetPath(guid);
+            AssetDatabase.DeleteAsset(roomPath);
+        }
+        
         room = new GameObject(roomName);
 
         GameObject tileGridForFloors = new GameObject("Floors");
@@ -361,8 +368,7 @@ public class UpdateRoomEditor : EditorWindow
 
         string localPath = "Assets/Prefabs/Rooms/" + room.name + ".prefab";
         localPath = AssetDatabase.GenerateUniqueAssetPath(localPath);
-        //PrefabUtility.SaveAsPrefabAsset(room, localPath);
-        PrefabUtility.SavePrefabAsset(room);
+        PrefabUtility.SaveAsPrefabAsset(room, localPath);
 
         DestroyImmediate(room);
 
