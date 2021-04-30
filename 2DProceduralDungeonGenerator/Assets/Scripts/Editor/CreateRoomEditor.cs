@@ -24,7 +24,7 @@ public class CreateRoomEditor : EditorWindow
     private int numberOfAdditionalTiles;
 
     protected string text = " ";
-    private string name = "Room";
+    private string roomName = "Room";
 
     private GameObject room;
     private GameObject floorTiles;
@@ -54,7 +54,7 @@ public class CreateRoomEditor : EditorWindow
         //===== ROOM CREATION =====
         // Get the width and height of the room
         EditorGUI.BeginChangeCheck();
-        name = EditorGUI.TextField(new Rect(0, 5, position.width, 15), "Room Name: ", name);
+        roomName = EditorGUI.TextField(new Rect(0, 5, position.width, 15), "Room Name: ", roomName);
         width = EditorGUI.IntField(new Rect(0, 25, position.width, 15), "Width", width);
         height = EditorGUI.IntField(new Rect(0, 45, position.width, 15), "Height", height);
 
@@ -236,7 +236,7 @@ public class CreateRoomEditor : EditorWindow
 
     private void CreateRoom()
     {
-        room = new GameObject(name);
+        room = new GameObject(roomName);
 
         GameObject tileGridForFloors = new GameObject("Floors");
         tileGridForFloors.AddComponent<Tilemap>();
