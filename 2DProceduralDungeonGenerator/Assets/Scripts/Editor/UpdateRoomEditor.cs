@@ -5,107 +5,149 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class AdditionalTiles
-{
-    public TileBase tile;
-    public Vector3Int position;
-
-    public AdditionalTiles(TileBase newTile, Vector3Int newPosition)
-    {
-        tile = newTile;
-        position = newPosition;
-    }
-}
-
-public class CreateRoomEditor : EditorWindow
+public class UpdateRoomEditor : EditorWindow
 {
     private int width;
     private int height;
     private int numberOfAdditionalTiles;
 
     protected string text = " ";
-    private string roomName = "Room";
+    private string roomName = null;
+
+    private bool gotData = false;
 
     private GameObject room;
     private GameObject floorTiles;
     private GameObject wallTiles;
     private GameObject additionalTilesPreview;
     private GameObject allTilesPreview;
-    
+
     private List<TileBase> tiles = new List<TileBase>();
     private List<AdditionalTiles> additionalTiles = new List<AdditionalTiles>();
 
     protected StreamReader reader = null;
 
-    [MenuItem("DungeonGenerator/Create Room")]
+    [MenuItem("DungeonGenerator/Update Room")]
     static void ShowWindow()
     {
-        GetWindow<CreateRoomEditor>("Create Room Editor");
+        GetWindow<UpdateRoomEditor>("Update Room Editor");
     }
 
     private void OnGUI()
     {
+        // Get a room prefab
+        room = (GameObject)EditorGUI.ObjectField(new Rect(0, 5, position.width, 20), "Room Prefab: ", room, typeof(GameObject), true);
+
         // Get Tile Palette
         if (tiles.Count == 0)
         {
             GetTilePalette();
         }
 
-        //===== ROOM CREATION =====
-        // Get the width and height of the room
-        EditorGUI.BeginChangeCheck();
-        roomName = EditorGUI.TextField(new Rect(0, 5, position.width, 20), "Room Name: ", roomName);
-        width = EditorGUI.IntField(new Rect(0, 30, position.width, 20), "Width", width);
-        height = EditorGUI.IntField(new Rect(0, 55, position.width, 20), "Height", height);
-
-        // Get the additional tiles list
-        numberOfAdditionalTiles = EditorGUI.IntField(new Rect(0, 80, position.width, 20), "Number of additional tiles", numberOfAdditionalTiles);
-
-        // If there are meant to be no additional tiles, clear the whole list
-        if (numberOfAdditionalTiles == 0)
+        if (room != null)
         {
-            additionalTiles.Clear();
-        }
-
-        if (numberOfAdditionalTiles > 0)
-        {
-            // Increase size of list
-            while (additionalTiles.Count < numberOfAdditionalTiles)
+            if (!gotData)
             {
-                additionalTiles.Add(new AdditionalTiles(null, Vector3Int.zero));
-            }
+                // Get the name of the room
+                roomName = room.name;
+                
+                // Get the width and height of the prefab
+                BoundsInt bounds = room.GetComponentInChildren<Tilemap>().cellBounds;
 
-            // Decrease size of list
-            while (additionalTiles.Count > numberOfAdditionalTiles)
-            {
-                additionalTiles.RemoveAt(additionalTiles.Count - 1);
-            }
+                width = bounds.size.x;
+                height = bounds.size.y;
 
-            for (int i = 0; i < numberOfAdditionalTiles; i++)
-            {
-                // Display tilebase box for each additional tile
-                additionalTiles[i].tile = (TileBase)EditorGUI.ObjectField(new Rect(0, 25 * i + 105, position.width - 135, 20), "Tile: ", additionalTiles[i].tile, typeof(TileBase), true);
-                additionalTiles[i].position =
-                    EditorGUI.Vector3IntField(new Rect(position.width - 130, 25 * i + 105, position.width - 280, 20), "", additionalTiles[i].position);
-            }
-        }
+                // Get number of additional tiles and what tiles have been used
+                Tilemap[] tilemap = room.GetComponentsInChildren<Tilemap>();
+                TileBase[] tileArray = tilemap[2].GetTilesBlock(bounds);
 
-        if (EditorGUI.EndChangeCheck())
-        {
-            DisableAllTiles();
+                int xPos = 0;
+                int yPos = 0;
+                for (int index = 0; index < tileArray.Length; index++)
+                {
+                    if (tileArray[index] != null)
+                    {
+                        numberOfAdditionalTiles++;
+                        
 
-            if (allTilesPreview == null)
-            {
+                        // Check if the tile exists in the list
+                        if (additionalTiles.Count == 0)
+                        {
+                            additionalTiles.Add(new AdditionalTiles(tileArray[index], new Vector3Int(xPos, yPos, 0)));
+                        }
+                    }
+
+                    xPos++;
+
+                    if (xPos >= width)
+                    {
+                        xPos = 0;
+                        yPos++;
+                    }
+                }
+
+                gotData = true;
+
                 PreviewAllTiles();
             }
-        }
 
-        EditorGUILayout.Space(25 * numberOfAdditionalTiles + 105);
 
-        if (GUILayout.Button("Create"))
-        {
-            CreateRoom();
+            // Get the width and height of the room
+            EditorGUI.BeginChangeCheck();
+            roomName = EditorGUI.TextField(new Rect(0, 30, position.width, 20), "Room Name: ", roomName);
+            width = EditorGUI.IntField(new Rect(0, 55, position.width, 20), "Width", width);
+            height = EditorGUI.IntField(new Rect(0, 80, position.width, 20), "Height", height);
+
+            // Get the additional tiles list
+            numberOfAdditionalTiles = EditorGUI.IntField(new Rect(0, 105, position.width, 20), "Number of additional tiles", numberOfAdditionalTiles);
+
+            // If there are meant to be no additional tiles, clear the whole list
+            if (numberOfAdditionalTiles == 0)
+            {
+                additionalTiles.Clear();
+            }
+
+            if (numberOfAdditionalTiles > 0)
+            {
+                // Increase size of list
+                while (additionalTiles.Count < numberOfAdditionalTiles)
+                {
+                    additionalTiles.Add(new AdditionalTiles(null, Vector3Int.zero));
+                }
+
+                // Decrease size of list
+                while (additionalTiles.Count > numberOfAdditionalTiles)
+                {
+                    additionalTiles.RemoveAt(additionalTiles.Count - 1);
+                }
+
+                for (int i = 0; i < numberOfAdditionalTiles; i++)
+                {
+                    // Display tilebase box for each additional tile
+                    additionalTiles[i].tile = (TileBase)EditorGUI.ObjectField(new Rect(0, 25 * i + 130, position.width - 135, 20), "Tile: ", additionalTiles[i].tile, typeof(TileBase), true);
+                    additionalTiles[i].position =
+                        EditorGUI.Vector3IntField(new Rect(position.width - 130, 25 * i + 130, position.width - 280, 20), "", additionalTiles[i].position);
+                }
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                DisableAllTiles();
+
+                if (allTilesPreview == null)
+                {
+                    PreviewAllTiles();
+                }
+            }
+
+            EditorGUILayout.Space(25 * numberOfAdditionalTiles + 130);
+
+            if (GUILayout.Button("Update"))
+            {
+                UpdateRoom();
+            }
         }
+        
     }
 
     private void OnDestroy()
@@ -124,7 +166,7 @@ public class CreateRoomEditor : EditorWindow
     private void PreviewAllTiles()
     {
         allTilesPreview = new GameObject("RoomPreview");
-        
+
         PreviewFloor();
         PreviewWalls();
         PreviewAdditionalTiles();
@@ -234,7 +276,7 @@ public class CreateRoomEditor : EditorWindow
         }
     }
 
-    private void CreateRoom()
+    private void UpdateRoom()
     {
         room = new GameObject(roomName);
 
@@ -319,7 +361,8 @@ public class CreateRoomEditor : EditorWindow
 
         string localPath = "Assets/Prefabs/Rooms/" + room.name + ".prefab";
         localPath = AssetDatabase.GenerateUniqueAssetPath(localPath);
-        PrefabUtility.SaveAsPrefabAsset(room, localPath);
+        //PrefabUtility.SaveAsPrefabAsset(room, localPath);
+        PrefabUtility.SavePrefabAsset(room);
 
         DestroyImmediate(room);
 
