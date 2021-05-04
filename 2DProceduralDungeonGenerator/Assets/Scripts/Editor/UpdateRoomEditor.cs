@@ -14,8 +14,6 @@ public class UpdateRoomEditor : EditorWindow
     protected string text = " ";
     private string roomName = null;
 
-    private bool gotData = false;
-
     private GameObject room;
     private GameObject floorTiles;
     private GameObject wallTiles;
