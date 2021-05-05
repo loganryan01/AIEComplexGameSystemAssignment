@@ -15,10 +15,12 @@ public class DungeonGenerator : MonoBehaviour
     public int columns = 100;
     public int rows = 100;
     public int numberOfRooms;
+    public IntRange corridorLength = new IntRange(3, 10);
     public GameObject[] roomPrefabs;
     
     private GameObject boardHolder;
     private Room[] rooms;
+    private Corridor[] corridors;
     private TileType[][] tiles;
     
     // Start is called before the first frame update
@@ -50,14 +52,34 @@ public class DungeonGenerator : MonoBehaviour
         // Create the rooms array with a size of the number of rooms
         rooms = new Room[numberOfRooms];
 
-        // Create the first room
+        // There should be one less corridor than there is rooms
+        corridors = new Corridor[numberOfRooms - 1];
+
+        // Create the first room and corridor
         rooms[0] = new Room();
+        corridors[0] = new Corridor();
 
         BoundsInt roomBounds = roomPrefabs[0].GetComponentInChildren<Tilemap>().cellBounds;
 
-        // Set up the first room
+        // Setup the first room
+        // Room object should take in a room prefab
         rooms[0].SetupFirstRoom(roomBounds, columns, rows);
-        Instantiate(roomPrefabs[0], new Vector3(rooms[0].xPos, rooms[0].yPos, 0), roomPrefabs[0].transform.rotation, boardHolder.transform);
+
+        // Setup the first corridor
+        corridors[0].SetupCorridor(rooms[0], corridorLength, columns, rows, true);
+        //Instantiate(roomPrefabs[0], new Vector3(rooms[0].xPos, rooms[0].yPos, 0), roomPrefabs[0].transform.rotation, boardHolder.transform);
+
+        for (int i = 1; i < rooms.Length; i++)
+        {
+            // Create a room
+            rooms[i] = new Room();
+
+            // Setup the room based on the previous corridor.
+            int roomIndex = Random.Range(0, roomPrefabs.Length);
+
+            roomBounds = roomPrefabs[roomIndex].GetComponentInChildren<Tilemap>().cellBounds;
+            rooms[i].SetupRoom(roomBounds, columns, rows, corridors[i - 1]);
+        }
     }
 
     // Update is called once per frame
