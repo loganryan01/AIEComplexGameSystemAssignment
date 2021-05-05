@@ -154,9 +154,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columns: 100
   rows: 100
-  numberOfRooms: 1
+  numberOfRooms: 10
+  corridorLength:
+    m_Min: 3
+    m_Max: 10
   roomPrefabs:
   - {fileID: 2260044753360113710, guid: 3ebb77333cf36814a9d84013430962af, type: 3}
+  - {fileID: 2737001333263231794, guid: 9fbf31296c47cf44c9b5fdbf415e216c, type: 3}
 --- !u!4 &67121351
 Transform:
   m_ObjectHideFlags: 0
@@ -248,7 +252,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!156049354 &327273969
 Grid:
   m_ObjectHideFlags: 0

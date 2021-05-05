@@ -18,6 +18,9 @@ public class WizardTileset : ScriptableWizard
     public TileBase bottomRightCornerWallTile;
     public TileBase voidTile;
 
+    //[Header("Corridor Tiles")]
+    //public TileBase corridorTopLeftTile;
+
     [MenuItem("DungeonGenerator/Set Tileset")]
     static void CreateWizard()
     {
