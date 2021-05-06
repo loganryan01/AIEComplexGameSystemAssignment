@@ -47,30 +47,31 @@ public class Room
 
                 // The x coordinate can be random but the left-most possibility is no further than the width 
                 // and the right-most possibility is that the end of the corridor is at the position of the room.
-                xPos = Random.Range(corridor.EndPositionX - width + 1, corridor.EndPositionX);
+                xPos = Random.Range(corridor.EndPositionX, corridor.EndPositionX - (width - 3));
 
                 // This must be clamped to ensure that the room doesn't go off the board
                 xPos = Mathf.Clamp(xPos, 0, columns - width);
+                //Debug.Log((corridor.EndPositionX/* - width + 2*/));
                 break;
             case Direction.East:
                 //width = Mathf.Clamp(width, 1, columns - corridor.EndPositionX);
                 xPos = corridor.EndPositionX;
 
-                yPos = Random.Range(corridor.EndPositionY - height + 1, corridor.EndPositionY);
+                yPos = Random.Range(corridor.EndPositionY, corridor.EndPositionY - (height - 3));
                 yPos = Mathf.Clamp(yPos, 0, rows - height);
                 break;
             case Direction.South:
                 //height = Mathf.Clamp(height, 1, corridor.EndPositionY);
                 yPos = corridor.EndPositionY - height + 1;
 
-                xPos = Random.Range(corridor.EndPositionX - width + 1, corridor.EndPositionX);
+                xPos = Random.Range(corridor.EndPositionX, corridor.EndPositionX - (width - 3));
                 xPos = Mathf.Clamp(xPos, 0, columns - width);
                 break;
             case Direction.West:
                 //width = Mathf.Clamp(width, 1, corridor.EndPositionX);
                 xPos = corridor.EndPositionX - width + 1;
 
-                yPos = Random.Range(corridor.EndPositionY - height + 1, corridor.EndPositionY);
+                yPos = Random.Range(corridor.EndPositionY, corridor.EndPositionY - (height - 3));
                 yPos = Mathf.Clamp(yPos, 0, rows - height);
                 break;
         }

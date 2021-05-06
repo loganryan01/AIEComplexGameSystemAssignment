@@ -124,27 +124,27 @@ public class DungeonGenerator : MonoBehaviour
                 if (rooms[i].xPos >= rooms[j].xPos && rooms[i].xPos <= rooms[j].xPos + rooms[j].width &&
                     rooms[i].yPos >= rooms[j].yPos && rooms[i].yPos <= rooms[j].yPos + rooms[j].height)
                 {
-                    Debug.Log("Rooms Overlapping");
+                    //Debug.Log("Rooms Overlapping");
                     success = false;
                 }
                 else if (rooms[i].xPos >= rooms[j].xPos && rooms[i].xPos <= rooms[j].xPos + rooms[j].width &&
                         rooms[i].yPos + rooms[i].height >= rooms[j].yPos && rooms[i].yPos + rooms[i].height <= rooms[j].yPos + rooms[j].height)
                 {
-                    Debug.Log("Rooms Overlapping");
+                    //Debug.Log("Rooms Overlapping");
                     success = false;
                 }
 
                 else if (rooms[i].xPos + rooms[i].width >= rooms[j].xPos && rooms[i].xPos + rooms[i].width <= rooms[j].xPos + rooms[j].width &&
                     rooms[i].yPos >= rooms[j].yPos && rooms[i].yPos <= rooms[j].yPos + rooms[j].height)
                 {
-                    Debug.Log("Rooms Overlapping");
+                    //Debug.Log("Rooms Overlapping");
                     success = false;
                 }
 
                 else if (rooms[i].xPos + rooms[i].width >= rooms[j].xPos && rooms[i].xPos + rooms[i].width <= rooms[j].xPos + rooms[j].width &&
                      rooms[i].yPos + rooms[i].height >= rooms[j].yPos && rooms[i].yPos + rooms[i].height <= rooms[j].yPos + rooms[j].height)
                 {
-                    Debug.Log("Rooms Overlapping");
+                    //Debug.Log("Rooms Overlapping");
                     success = false;
                 }
             }
@@ -168,6 +168,10 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     int yCoord = currentRoom.yPos + k;
 
+                    if (xCoord < 0 || xCoord > tiles.Length)
+                    {
+                        Debug.Log("X Coord problem");
+                    }
                     // The coordinates in the jagged array are based on the room's position and it's width and height
                     tiles[xCoord][yCoord] = TileType.ROOM;
                 }
@@ -225,7 +229,7 @@ public class DungeonGenerator : MonoBehaviour
     {
         for (int i = 0; i < corridors.Length; i++)
         {
-            GameObject corridorGameObject = new GameObject("Corridor");
+            GameObject corridorGameObject = new GameObject("Corridor " + i);
 
             GameObject tileGridForFloors = new GameObject("Floors");
             tileGridForFloors.AddComponent<Tilemap>();
@@ -240,15 +244,13 @@ public class DungeonGenerator : MonoBehaviour
             switch (corridors[i].direction)
             {
                 case Direction.North:
-
-                    for (int x = 0; x < 3; x++)
+                    for (int y = 0; y < corridors[i].corridorLength; y++)
                     {
-                        for (int y = 0; y < corridors[i].corridorLength; y++)
-                        {
-                            tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[0]);
-                        }
+                        tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(1, y, 0), tilePalette[0]);
                     }
 
+                    //Debug.Log(corridorGameObject.name);
+                    //Debug.Log(corridors[i].startXPos + " - " + corridors[i].EndPositionX);
                     for (int x = 0; x < 3; x++)
                     {
                         for (int y = 0; y < corridors[i].corridorLength; y++)
@@ -266,18 +268,12 @@ public class DungeonGenerator : MonoBehaviour
                     }
                     break;
                 case Direction.East:
-                    /*
-                     3 3 3 3 3
-                     0 0 0 0 0
-                     4 4 4 4 4
-                     */
                     for (int x = 0; x < corridors[i].corridorLength; x++)
                     {
-                        for (int y = 0; y < 3; y++)
-                        {
-                            tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[0]);
-                        }
+                        tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(x, 1, 0), tilePalette[0]);
                     }
+
+                    //Debug.Log(corridorGameObject.name);
 
                     for (int y = 0; y < 3; y++)
                     {
@@ -296,12 +292,9 @@ public class DungeonGenerator : MonoBehaviour
                     }
                     break;
                 case Direction.South:
-                    for (int x = 0; x < 3; x++)
+                    for (int y = 0; y < corridors[i].corridorLength; y++)
                     {
-                        for (int y = 0; y < corridors[i].corridorLength; y++)
-                        {
-                            tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[0]);
-                        }
+                        tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(1, y, 0), tilePalette[0]);
                     }
 
                     for (int x = 0; x < 3; x++)
@@ -323,10 +316,7 @@ public class DungeonGenerator : MonoBehaviour
                 case Direction.West:
                     for (int x = 0; x < corridors[i].corridorLength; x++)
                     {
-                        for (int y = 0; y < 3; y++)
-                        {
-                            tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[0]);
-                        }
+                        tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(x, 1, 0), tilePalette[0]);
                     }
 
                     for (int y = 0; y < 3; y++)
