@@ -18,8 +18,17 @@ public class WizardTileset : ScriptableWizard
     public TileBase bottomRightCornerWallTile;
     public TileBase voidTile;
 
-    //[Header("Corridor Tiles")]
-    //public TileBase corridorTopLeftTile;
+    [Header("Horizontal Corridor Tiles")]
+    public TileBase horizontalCorridorTopLeftTile;
+    public TileBase horizontalCorridorTopRightTile;
+    public TileBase horizontalCorridorBottomLeftTile;
+    public TileBase horizontalCorridorBottomRightTile;
+
+    [Header("Vertical Corridor Tiles")]
+    public TileBase verticalCorridorTopLeftTile;
+    public TileBase verticalCorridorTopRightTile;
+    public TileBase verticalCorridorBottomLeftTile;
+    public TileBase verticalCorridorBottomRightTile;
 
     [MenuItem("DungeonGenerator/Set Tileset")]
     static void CreateWizard()
@@ -65,10 +74,17 @@ public class WizardTileset : ScriptableWizard
                            topRightCornerWallTile.name,
                            bottomLeftCornerWallTile.name,
                            bottomRightCornerWallTile.name,
-                           voidTile.name };
+                           voidTile.name,
+                           horizontalCorridorTopLeftTile.name,
+                           horizontalCorridorTopRightTile.name,
+                           horizontalCorridorBottomLeftTile.name,
+                           horizontalCorridorBottomRightTile.name, 
+                           verticalCorridorTopLeftTile.name,
+                           verticalCorridorTopRightTile.name,
+                           verticalCorridorBottomLeftTile.name,
+                           verticalCorridorBottomRightTile.name };
 
         StreamWriter writer = new StreamWriter(path, false);
-
         foreach (string name in names)
         {
             writer.WriteLine(name);
