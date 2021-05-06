@@ -42,19 +42,19 @@ public class DungeonGenerator : MonoBehaviour
             GetTilePalette();
         }
 
-        SetupTilesArray();
-
         do
         {
-            CreateRoomsAndCorridors();
-        } while (!success);
-        
+            SetupTilesArray();
 
-        SetTilesValuesForRooms();
-        SetTilesValuesForCorridors();
+            CreateRoomsAndCorridors();
+
+            SetTilesValuesForRooms();
+            SetTilesValuesForCorridors();
+        } while (!success);
 
         InstantiateRooms();
         InstantiateCorridors();
+        InstantiateOuterWalls();
     }
 
     void SetupTilesArray()
@@ -117,34 +117,120 @@ public class DungeonGenerator : MonoBehaviour
         }
 
         // Check if rooms are overlapping
+        CheckRoom2RoomCollision();
+
+        // Check if a room overlaps a corridor
+        CheckRoom2CorridorCollision();
+
+        // Check if corridors overlap
+        CheckCorridor2CorridorCollision();
+    }
+
+    void CheckRoom2RoomCollision()
+    {
         for (int i = 0; i < rooms.Length; i++)
         {
             for (int j = i + 1; j < rooms.Length; j++)
             {
-                if (rooms[i].xPos >= rooms[j].xPos && rooms[i].xPos <= rooms[j].xPos + rooms[j].width &&
-                    rooms[i].yPos >= rooms[j].yPos && rooms[i].yPos <= rooms[j].yPos + rooms[j].height)
+                Rect room1Rect = new Rect(rooms[i].xPos, rooms[i].yPos, rooms[i].width, rooms[i].height);
+                Rect room2Rect = new Rect(rooms[j].xPos, rooms[j].yPos, rooms[j].width, rooms[j].height);
+
+                if (room1Rect.Overlaps(room2Rect))
                 {
-                    //Debug.Log("Rooms Overlapping");
                     success = false;
                 }
-                else if (rooms[i].xPos >= rooms[j].xPos && rooms[i].xPos <= rooms[j].xPos + rooms[j].width &&
-                        rooms[i].yPos + rooms[i].height >= rooms[j].yPos && rooms[i].yPos + rooms[i].height <= rooms[j].yPos + rooms[j].height)
+            }
+        }
+    }
+
+    void CheckRoom2CorridorCollision()
+    {
+        for (int i = 0; i < rooms.Length; i++)
+        {
+            for (int j = 0; j < corridors.Length; j++)
+            {
+                // L1: rooms[i].xPos, rooms[i].yPos + rooms[i].height + 1
+                // L2: corridors[j].startXPos, corridors[j].startYPos + corridors[j].corridorsLength + 1
+                // R1: rooms[i].xPos + rooms[i].width + 1, rooms[i].yPos
+                // R2: corridors[j].startXPos + 4, corridors[j].startYPos
+                if (i == j)
+                    continue;
+
+                Rect room1Rect = new Rect(rooms[i].xPos, rooms[i].yPos, rooms[i].width, rooms[i].height);
+                Rect room2Rect = new Rect();
+
+                switch (corridors[j].direction)
                 {
-                    //Debug.Log("Rooms Overlapping");
-                    success = false;
+                    case Direction.North:
+                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos + 2, 3, corridors[j].corridorLength - 2);
+                        break;
+                    case Direction.East:
+                        room2Rect = new Rect(corridors[j].startXPos + 2, corridors[j].startYPos, corridors[j].corridorLength - 2, 3);
+                        break;
+                    case Direction.South:
+                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos + 1, 3, corridors[j].corridorLength - 2);
+                        break;
+                    case Direction.West:
+                        room2Rect = new Rect(corridors[j].startXPos + 2, corridors[j].startYPos, corridors[j].corridorLength - 2, 3);
+                        break;
                 }
 
-                else if (rooms[i].xPos + rooms[i].width >= rooms[j].xPos && rooms[i].xPos + rooms[i].width <= rooms[j].xPos + rooms[j].width &&
-                    rooms[i].yPos >= rooms[j].yPos && rooms[i].yPos <= rooms[j].yPos + rooms[j].height)
+                if (room1Rect.Overlaps(room2Rect))
                 {
-                    //Debug.Log("Rooms Overlapping");
                     success = false;
                 }
+            }
+        }
+    }
 
-                else if (rooms[i].xPos + rooms[i].width >= rooms[j].xPos && rooms[i].xPos + rooms[i].width <= rooms[j].xPos + rooms[j].width &&
-                     rooms[i].yPos + rooms[i].height >= rooms[j].yPos && rooms[i].yPos + rooms[i].height <= rooms[j].yPos + rooms[j].height)
+    void CheckCorridor2CorridorCollision()
+    {
+        for (int i = 0; i < corridors.Length; i++)
+        {
+            for (int j = i + 1; j < corridors.Length; j++)
+            {
+                // L1: corridors[i].startXPos, corridors[i].startYPos + corridors[i].corridorsLength + 1
+                // L2: corridors[j].startXPos, corridors[j].startYPos + corridors[j].corridorsLength + 1
+                // R1: corridors[i].startXPos + 4, corridors[i].startYPos
+                // R2: corridors[j].startXPos + 4, corridors[j].startYPos
+                Rect room1Rect = new Rect();
+
+                switch (corridors[i].direction)
                 {
-                    //Debug.Log("Rooms Overlapping");
+                    case Direction.North:
+                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos, 3, corridors[i].corridorLength);
+                        break;
+                    case Direction.East:
+                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos, corridors[i].corridorLength, 3);
+                        break;
+                    case Direction.South:
+                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos, 3, corridors[i].corridorLength);
+                        break;
+                    case Direction.West:
+                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos, corridors[i].corridorLength, 3);
+                        break;
+                }
+
+                Rect room2Rect = new Rect();
+
+                switch (corridors[j].direction)
+                {
+                    case Direction.North:
+                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos, 3, corridors[j].corridorLength);
+                        break;
+                    case Direction.East:
+                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos, corridors[j].corridorLength, 3);
+                        break;
+                    case Direction.South:
+                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos, 3, corridors[j].corridorLength);
+                        break;
+                    case Direction.West:
+                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos, corridors[j].corridorLength, 3);
+                        break;
+                }
+
+                if (room1Rect.Overlaps(room2Rect))
+                {
                     success = false;
                 }
             }
@@ -168,10 +254,14 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     int yCoord = currentRoom.yPos + k;
 
-                    if (xCoord < 0 || xCoord > tiles.Length)
+                    if (xCoord < 0 || xCoord >= tiles.Length ||
+                        yCoord < 0 || yCoord >= tiles.Length)
                     {
-                        Debug.Log("X Coord problem");
+                        
+                        success = false;
+                        return;
                     }
+                    //Debug.Log(xCoord + " " + yCoord);
                     // The coordinates in the jagged array are based on the room's position and it's width and height
                     tiles[xCoord][yCoord] = TileType.ROOM;
                 }
@@ -209,6 +299,13 @@ public class DungeonGenerator : MonoBehaviour
                     case Direction.West:
                         xCoord -= j;
                         break;
+                }
+
+                if (xCoord < 0 || xCoord >= tiles.Length ||
+                    yCoord < 0 || yCoord >= tiles.Length)
+                {
+                    success = false;
+                    return;
                 }
 
                 // Set the tile at these coordinates to corridor
@@ -249,8 +346,6 @@ public class DungeonGenerator : MonoBehaviour
                         tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(1, y, 0), tilePalette[0]);
                     }
 
-                    //Debug.Log(corridorGameObject.name);
-                    //Debug.Log(corridors[i].startXPos + " - " + corridors[i].EndPositionX);
                     for (int x = 0; x < 3; x++)
                     {
                         for (int y = 0; y < corridors[i].corridorLength; y++)
@@ -272,8 +367,6 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(x, 1, 0), tilePalette[0]);
                     }
-
-                    //Debug.Log(corridorGameObject.name);
 
                     for (int y = 0; y < 3; y++)
                     {
@@ -357,6 +450,28 @@ public class DungeonGenerator : MonoBehaviour
                     break;
             }
         }
+    }
+
+    void InstantiateOuterWalls()
+    {
+        GameObject tilemapForVoidTiles = new GameObject("VoidTiles");
+        tilemapForVoidTiles.AddComponent<Tilemap>();
+        tilemapForVoidTiles.AddComponent<TilemapRenderer>();
+        tilemapForVoidTiles.GetComponent<TilemapRenderer>().sortingOrder = -1;
+
+
+        for (int x = 0; x < rows; x++)
+        {
+            for (int y = 0; y < columns; y++)
+            {
+                if (tiles[x][y] == TileType.NULL)
+                {
+                    tilemapForVoidTiles.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[9]);
+                }
+            }
+        }
+
+        tilemapForVoidTiles.transform.SetParent(boardHolder.transform);
     }
 
     private void GetTilePalette()
