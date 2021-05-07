@@ -120,7 +120,7 @@ public class DungeonGenerator : MonoBehaviour
         CheckRoom2RoomCollision();
 
         // Check if a room overlaps a corridor
-        CheckRoom2CorridorCollision();
+        //CheckRoom2CorridorCollision();
 
         // Check if corridors overlap
         CheckCorridor2CorridorCollision();
@@ -162,16 +162,16 @@ public class DungeonGenerator : MonoBehaviour
                 switch (corridors[j].direction)
                 {
                     case Direction.North:
-                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos + 2, 3, corridors[j].corridorLength - 2);
+                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos + 1, 3, corridors[j].corridorLength - 1);
                         break;
                     case Direction.East:
-                        room2Rect = new Rect(corridors[j].startXPos + 2, corridors[j].startYPos, corridors[j].corridorLength - 2, 3);
+                        room2Rect = new Rect(corridors[j].startXPos + 1, corridors[j].startYPos, corridors[j].corridorLength - 1, 3);
                         break;
                     case Direction.South:
-                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos + 1, 3, corridors[j].corridorLength - 2);
+                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos - 1, 3, corridors[j].corridorLength - 1);
                         break;
                     case Direction.West:
-                        room2Rect = new Rect(corridors[j].startXPos + 2, corridors[j].startYPos, corridors[j].corridorLength - 2, 3);
+                        room2Rect = new Rect(corridors[j].startXPos + 1, corridors[j].startYPos, corridors[j].corridorLength - 1, 3);
                         break;
                 }
 
@@ -198,16 +198,16 @@ public class DungeonGenerator : MonoBehaviour
                 switch (corridors[i].direction)
                 {
                     case Direction.North:
-                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos, 3, corridors[i].corridorLength);
+                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos + 1, 3, corridors[i].corridorLength - 1);
                         break;
                     case Direction.East:
-                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos, corridors[i].corridorLength, 3);
+                        room1Rect = new Rect(corridors[i].startXPos + 1, corridors[i].startYPos, corridors[i].corridorLength - 1, 3);
                         break;
                     case Direction.South:
-                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos, 3, corridors[i].corridorLength);
+                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos - 1, 3, corridors[i].corridorLength - 1);
                         break;
                     case Direction.West:
-                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos, corridors[i].corridorLength, 3);
+                        room1Rect = new Rect(corridors[i].startXPos - 1, corridors[i].startYPos, corridors[i].corridorLength - 1, 3);
                         break;
                 }
 
@@ -216,16 +216,16 @@ public class DungeonGenerator : MonoBehaviour
                 switch (corridors[j].direction)
                 {
                     case Direction.North:
-                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos, 3, corridors[j].corridorLength);
+                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos + 1, 3, corridors[j].corridorLength - 1);
                         break;
                     case Direction.East:
-                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos, corridors[j].corridorLength, 3);
+                        room2Rect = new Rect(corridors[j].startXPos + 1, corridors[j].startYPos, corridors[j].corridorLength - 1, 3);
                         break;
                     case Direction.South:
-                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos, 3, corridors[j].corridorLength);
+                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos - 1, 3, corridors[j].corridorLength - 1);
                         break;
                     case Direction.West:
-                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos, corridors[j].corridorLength, 3);
+                        room2Rect = new Rect(corridors[j].startXPos - 1, corridors[j].startYPos, corridors[j].corridorLength - 1, 3);
                         break;
                 }
 
@@ -318,7 +318,76 @@ public class DungeonGenerator : MonoBehaviour
     {
         for (int i = 0; i < rooms.Length; i++)
         {
-            Instantiate(rooms[i].roomTemplate, new Vector3(rooms[i].xPos, rooms[i].yPos, 0), rooms[i].roomTemplate.transform.rotation, boardHolder.transform);
+            GameObject room = Instantiate(rooms[i].roomTemplate, new Vector3(rooms[i].xPos, rooms[i].yPos, 0), rooms[i].roomTemplate.transform.rotation, boardHolder.transform); ;
+            Tilemap roomWallsTilemap = room.GetComponentsInChildren<Tilemap>()[1];
+
+            if (i < rooms.Length - 1)
+            {
+                switch (corridors[i].direction)
+                {
+                    // Get the starting position of the corridors
+                    case Direction.North:
+                        Vector3Int northCorridorPosition = new Vector3Int(corridors[i].startXPos, corridors[i].startYPos, 0);
+                        Vector3Int northCorridorCellPosition = roomWallsTilemap.WorldToCell(northCorridorPosition);
+                        int northCorridorEntranceXPosition = northCorridorCellPosition.x + 1;
+                        roomWallsTilemap.SetTile(new Vector3Int(northCorridorEntranceXPosition, northCorridorCellPosition.y, 0), tilePalette[18]);
+                        break;
+                    case Direction.East:
+                        Vector3Int eastCorridorPosition = new Vector3Int(corridors[i].startXPos, corridors[i].startYPos, 0);
+                        //Debug.Log("Corridor " + i + " Start Position: " + eastCorridorPosition);
+                        Vector3Int eastCorridorCellPosition = roomWallsTilemap.WorldToCell(eastCorridorPosition);
+                        int eastCorridorEntranceYPosition = eastCorridorCellPosition.y + 1;
+                        roomWallsTilemap.SetTile(new Vector3Int(eastCorridorCellPosition.x, eastCorridorEntranceYPosition, 0), tilePalette[18]);
+                        break;
+                    case Direction.South:
+                        Vector3Int southCorridorPosition = new Vector3Int(corridors[i].startXPos, corridors[i].startYPos - 1, 0);
+                        Vector3Int southCorridorCellPosition = roomWallsTilemap.WorldToCell(southCorridorPosition);
+                        int southCorridorEntranceXPosition = southCorridorCellPosition.x + 1;
+                        roomWallsTilemap.SetTile(new Vector3Int(southCorridorEntranceXPosition, southCorridorCellPosition.y, 0), tilePalette[18]);
+                        break;
+                    case Direction.West:
+                        Vector3Int westCorridorPosition = new Vector3Int(corridors[i].startXPos - 1, corridors[i].startYPos, 0);
+                        Vector3Int westCorridorCellPosition = roomWallsTilemap.WorldToCell(westCorridorPosition);
+                        int westCorridorEntranceYPosition = westCorridorCellPosition.y + 1;
+                        roomWallsTilemap.SetTile(new Vector3Int(westCorridorCellPosition.x, westCorridorEntranceYPosition, 0), tilePalette[18]);
+                        break;
+                }
+            }
+
+            if (i > 0)
+            {
+                // Get the end position of the corridors
+                switch (rooms[i].enteringDirection)
+                {
+                    case Direction.North:
+                        // Get the south face of the room
+                        Vector3Int northCorridorPosition = new Vector3Int(corridors[i - 1].EndPositionX, corridors[i - 1].EndPositionY - 1, 0);
+                        Vector3Int northCorridorCellPosition = roomWallsTilemap.WorldToCell(northCorridorPosition);
+                        int northCorridorExitXPosition = northCorridorCellPosition.x + 1;
+                        roomWallsTilemap.SetTile(new Vector3Int(northCorridorExitXPosition, northCorridorCellPosition.y, 0), tilePalette[18]);
+                        break;
+                    case Direction.East:
+                        Vector3Int eastCorridorPosition = new Vector3Int(corridors[i - 1].EndPositionX - 1, corridors[i - 1].EndPositionY, 0);
+                        Vector3Int eastCorridorCellPosition = roomWallsTilemap.WorldToCell(eastCorridorPosition);
+                        int eastCorridorExitYPosition = eastCorridorCellPosition.y + 1;
+                        roomWallsTilemap.SetTile(new Vector3Int(eastCorridorCellPosition.x, eastCorridorExitYPosition, 0), tilePalette[18]);
+                        break;
+                    case Direction.South:
+                        // Get the north face of the room
+                        Vector3Int southCorridorPosition = new Vector3Int(corridors[i - 1].EndPositionX, corridors[i - 1].EndPositionY, 0);
+                        Vector3Int southCorridorCellPosition = roomWallsTilemap.WorldToCell(southCorridorPosition);
+                        int southCorridorExitYPosition = southCorridorCellPosition.x + 1;
+                        roomWallsTilemap.SetTile(new Vector3Int(southCorridorExitYPosition, southCorridorCellPosition.y, 0), tilePalette[18]);
+                        break;
+                    case Direction.West:
+                        Vector3Int westCorridorPosition = new Vector3Int(corridors[i - 1].EndPositionX, corridors[i - 1].EndPositionY, 0);
+                        Vector3Int westCorridorCellPosition = roomWallsTilemap.WorldToCell(westCorridorPosition);
+                        int westCorridorExitYPosition = westCorridorCellPosition.y + 1;
+                        roomWallsTilemap.SetTile(new Vector3Int(westCorridorCellPosition.x, westCorridorExitYPosition, 0), tilePalette[18]);
+                        break;
+                }
+            }
+
         }
     }
 
@@ -378,7 +447,7 @@ public class DungeonGenerator : MonoBehaviour
                             if (x == 0 && y == corridors[i].corridorLength - 1)
                             {
                                 // Check if the bottom left corner of the room is being overlapped by the top left corner of the corridor
-                                Vector3Int corridorTopLeftCorner = new Vector3Int(corridors[i].startXPos + 2, corridors[i].startYPos + corridors[i].corridorLength - 1, 0);
+                                Vector3Int corridorTopLeftCorner = new Vector3Int(corridors[i].startXPos, corridors[i].startYPos + corridors[i].corridorLength - 1, 0);
 
                                 for (int j = 0; j < rooms.Length; j++)
                                 {
@@ -504,7 +573,7 @@ public class DungeonGenerator : MonoBehaviour
 
                                     if (corridorBottomRightCorner == roomBottomLeftCorner)
                                     {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[2]);
+                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
                                         break;
                                     }
                                     else if (j == rooms.Length - 1)
@@ -528,7 +597,7 @@ public class DungeonGenerator : MonoBehaviour
 
                                     if (corridorTopLeftCorner == roomTopRightCorner)
                                     {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[1]);
+                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
                                         break;
                                     }
                                     else if (j == rooms.Length - 1)
@@ -552,7 +621,7 @@ public class DungeonGenerator : MonoBehaviour
 
                                     if (corridorTopRightCorner == roomTopLeftCorner)
                                     {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[1]);
+                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
                                         break;
                                     }
                                     else if (j == rooms.Length - 1)
@@ -594,7 +663,7 @@ public class DungeonGenerator : MonoBehaviour
                                 for (int j = 0; j < rooms.Length; j++)
                                 {
                                     Vector3Int roomTopLeftCorner = new Vector3Int(rooms[j].xPos, rooms[j].yPos + rooms[j].height - 1, 0);
-
+                                    //Debug.Log("Corridor " + i + " Bottom Left Corner Position: " + corridorBottomLeftCorner + " Room " + j + " Bottom Right Corner Position: " + roomTopLeftCorner);
                                     if (corridorBottomLeftCorner == roomTopLeftCorner)
                                     {
                                         tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[1]);
@@ -708,7 +777,7 @@ public class DungeonGenerator : MonoBehaviour
                                 for (int j = 0; j < rooms.Length; j++)
                                 {
                                     Vector3Int roomBottomRightCorner = new Vector3Int(rooms[j].xPos + rooms[j].width - 1, rooms[j].yPos, 0);
-
+                                    
                                     if (corridorBottomLeftCorner == roomBottomRightCorner)
                                     {
                                         tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
@@ -734,7 +803,7 @@ public class DungeonGenerator : MonoBehaviour
 
                                     if (corridorBottomRightCorner == roomBottomLeftCorner)
                                     {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[2]);
+                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
                                         break;
                                     }
                                     else if (j == rooms.Length - 1)
@@ -757,7 +826,7 @@ public class DungeonGenerator : MonoBehaviour
 
                                     if (corridorTopLeftCorner == roomTopRightCorner)
                                     {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[1]);
+                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
                                         break;
                                     }
                                     else if (j == rooms.Length - 1)
@@ -780,7 +849,7 @@ public class DungeonGenerator : MonoBehaviour
 
                                     if (corridorTopRightCorner == roomTopLeftCorner)
                                     {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[1]);
+                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
                                         break;
                                     }
                                     else if (j == rooms.Length - 1)

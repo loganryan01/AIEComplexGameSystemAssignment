@@ -30,6 +30,9 @@ public class WizardTileset : ScriptableWizard
     public TileBase verticalCorridorBottomLeftTile;
     public TileBase verticalCorridorBottomRightTile;
 
+    [Header("Optional Tile")]
+    public TileBase doorTile;
+
     [MenuItem("DungeonGenerator/Set Tileset")]
     static void CreateWizard()
     {
@@ -82,7 +85,8 @@ public class WizardTileset : ScriptableWizard
                            verticalCorridorTopLeftTile.name,
                            verticalCorridorTopRightTile.name,
                            verticalCorridorBottomLeftTile.name,
-                           verticalCorridorBottomRightTile.name };
+                           verticalCorridorBottomRightTile.name,
+                           doorTile.name };
 
         StreamWriter writer = new StreamWriter(path, false);
         foreach (string name in names)

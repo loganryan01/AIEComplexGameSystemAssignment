@@ -43,7 +43,7 @@ public class Room
                 //height = Mathf.Clamp(height, 1, rows - corridor.EndPositionY);
 
                 // The y coordinate of the room must be at the end of the corridor (since corridor leads to the bottom of the room).
-                yPos = corridor.EndPositionY;
+                yPos = corridor.EndPositionY - 1;
 
                 // The x coordinate can be random but the left-most possibility is no further than the width 
                 // and the right-most possibility is that the end of the corridor is at the position of the room.
@@ -55,7 +55,7 @@ public class Room
                 break;
             case Direction.East:
                 //width = Mathf.Clamp(width, 1, columns - corridor.EndPositionX);
-                xPos = corridor.EndPositionX;
+                xPos = corridor.EndPositionX - 1;
 
                 yPos = Random.Range(corridor.EndPositionY, corridor.EndPositionY - (height - 3));
                 yPos = Mathf.Clamp(yPos, 0, rows - height);
