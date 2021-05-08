@@ -68,8 +68,15 @@ public class WizardTileset : ScriptableWizard
     private void OnWizardCreate()
     {
         string path = "Assets/Resources/TilePalette.txt";
-        string[] names = { floorTile.name, 
-                           leftWallTile.name, 
+        string doorTileName = "Null";
+
+        if (doorTile != null)
+        {
+            doorTileName = doorTile.name;
+        }
+
+        string[] names = { floorTile.name,
+                           leftWallTile.name,
                            rightWallTile.name,
                            topWallTile.name,
                            bottomWallTile.name,
@@ -81,12 +88,14 @@ public class WizardTileset : ScriptableWizard
                            horizontalCorridorTopLeftTile.name,
                            horizontalCorridorTopRightTile.name,
                            horizontalCorridorBottomLeftTile.name,
-                           horizontalCorridorBottomRightTile.name, 
+                           horizontalCorridorBottomRightTile.name,
                            verticalCorridorTopLeftTile.name,
                            verticalCorridorTopRightTile.name,
                            verticalCorridorBottomLeftTile.name,
                            verticalCorridorBottomRightTile.name,
-                           doorTile.name };
+                           doorTileName };
+
+        
 
         StreamWriter writer = new StreamWriter(path, false);
         foreach (string name in names)
