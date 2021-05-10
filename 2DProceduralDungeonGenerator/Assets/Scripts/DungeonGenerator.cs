@@ -38,6 +38,11 @@ public class DungeonGenerator : MonoBehaviour
 
     public void GenerateDungeon()
     {
+        if (boardHolder == null)
+        {
+            boardHolder = GameObject.Find("BoardHolder");
+        }
+        
         if (boardHolder != null)
         {
             DestroyImmediate(boardHolder);
@@ -548,6 +553,140 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    void InstantiateHorizontalCorridors(GameObject tileGridForFloors, GameObject tileGridForWalls, Corridor corridor)
+    {
+        int corridorStartXPos = 0;
+        int corridorStartYPos = 0;
+
+        if (corridor.direction == Direction.East)
+        {
+            corridorStartXPos = corridor.startXPos;
+            corridorStartYPos = corridor.startYPos;
+        }
+        else if (corridor.direction == Direction.West)
+        {
+            corridorStartXPos = corridor.EndPositionX;
+            corridorStartYPos = corridor.EndPositionY;
+        }
+
+        for (int x = 0; x < corridor.corridorLength; x++)
+        {
+            tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(x, 1, 0), tilePalette[0]);
+        }
+
+        for (int y = 0; y < 3; y++)
+        {
+            for (int x = 0; x < corridor.corridorLength; x++)
+            {
+                // Bottom Left Corner of the corridor
+                if (x == 0 && y == 0)
+                {
+                    // Check if the bottom right corner of the room is being overlapped by the bottom left corner of the corridor
+                    Vector3Int corridorBottomLeftCorner = new Vector3Int(corridorStartXPos, corridorStartYPos, 0);
+
+                    for (int j = 0; j < rooms.Length; j++)
+                    {
+                        Vector3Int roomBottomRightCorner = new Vector3Int(rooms[j].xPos + rooms[j].width - 1, rooms[j].yPos, 0);
+
+                        if (corridorBottomLeftCorner == roomBottomRightCorner)
+                        {
+                            tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
+                            break;
+                        }
+                        else if (j == rooms.Length - 1)
+                        {
+                            tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[12]);
+                        }
+                    }
+
+                    continue;
+                }
+
+                // Bottom Right Corner of the corridor
+                if (y == 0 && x == corridor.corridorLength - 1)
+                {
+                    // Check if the bottom Left corner of the room is being overlapped by the bottom right corner of the corridor
+                    Vector3Int corridorBottomRightCorner = new Vector3Int(corridorStartXPos + corridor.corridorLength - 1, corridorStartYPos, 0);
+
+                    for (int j = 0; j < rooms.Length; j++)
+                    {
+                        Vector3Int roomBottomLeftCorner = new Vector3Int(rooms[j].xPos, rooms[j].yPos, 0);
+
+                        if (corridorBottomRightCorner == roomBottomLeftCorner)
+                        {
+                            tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
+                            break;
+                        }
+                        else if (j == rooms.Length - 1)
+                        {
+                            tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[13]);
+                        }
+                    }
+
+                    continue;
+                }
+
+                // Top Left Corner of the corridor
+                if (y == 2 && x == 0)
+                {
+                    // Check if the top right corner of the room is being overlapped by the top left corner of the corridor
+                    Vector3Int corridorTopLeftCorner = new Vector3Int(corridorStartXPos, corridorStartYPos + 2, 0);
+
+                    for (int j = 0; j < rooms.Length; j++)
+                    {
+                        Vector3Int roomTopRightCorner = new Vector3Int(rooms[j].xPos + rooms[j].width - 1, rooms[j].yPos + rooms[j].height - 1, 0);
+
+                        if (corridorTopLeftCorner == roomTopRightCorner)
+                        {
+                            tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
+                            break;
+                        }
+                        else if (j == rooms.Length - 1)
+                        {
+                            tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[10]);
+                        }
+                    }
+
+                    continue;
+                }
+
+                // Top Right Corner of the corridor
+                if (y == 2 && x == corridor.corridorLength - 1)
+                {
+                    // Check if the top left corner of the room is being overlapped by the top right corner of the corridor
+                    Vector3Int corridorTopRightCorner = new Vector3Int(corridorStartXPos + corridor.corridorLength - 1, corridorStartYPos + 2, 0);
+
+                    for (int j = 0; j < rooms.Length; j++)
+                    {
+                        Vector3Int roomTopLeftCorner = new Vector3Int(rooms[j].xPos, rooms[j].yPos + rooms[j].height - 1, 0);
+
+                        if (corridorTopRightCorner == roomTopLeftCorner)
+                        {
+                            tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
+                            break;
+                        }
+                        else if (j == rooms.Length - 1)
+                        {
+                            tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[11]);
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (y == 0)
+                {
+                    tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
+                }
+
+                if (y == 2)
+                {
+                    tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
+                }
+            }
+        }
+    }
+
     void InstantiateCorridors()
     {
         for (int i = 0; i < corridors.Length; i++)
@@ -562,7 +701,7 @@ public class DungeonGenerator : MonoBehaviour
             tileGridForWalls.AddComponent<Tilemap>();
             tileGridForWalls.AddComponent<TilemapRenderer>();
             tileGridForWalls.AddComponent<TilemapCollider2D>();
-            tileGridForWalls.GetComponent<TilemapRenderer>().sortingOrder = 1;
+            tileGridForWalls.GetComponent<TilemapRenderer>().sortingOrder = 3;
 
             switch (corridors[i].direction)
             {
@@ -570,239 +709,13 @@ public class DungeonGenerator : MonoBehaviour
                     InstantiateVerticalCorridors(tileGridForFloors, tileGridForWalls, corridors[i]);
                     break;
                 case Direction.East:
-                    for (int x = 0; x < corridors[i].corridorLength; x++)
-                    {
-                        tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(x, 1, 0), tilePalette[0]);
-                    }
-
-                    for (int y = 0; y < 3; y++)
-                    {
-                        for (int x = 0; x < corridors[i].corridorLength; x++)
-                        {
-                            // Bottom Left Corner of the corridor
-                            if (x == 0 && y == 0)
-                            {
-                                // Check if the bottom right corner of the room is being overlapped by the bottom left corner of the corridor
-                                Vector3Int corridorBottomLeftCorner = new Vector3Int(corridors[i].startXPos, corridors[i].startYPos, 0);
-
-                                for (int j = 0; j < rooms.Length; j++)
-                                {
-                                    Vector3Int roomBottomRightCorner = new Vector3Int(rooms[j].xPos + rooms[j].width - 1, rooms[j].yPos, 0);
-
-                                    if (corridorBottomLeftCorner == roomBottomRightCorner)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
-                                        break;
-                                    }
-                                    else if (j == rooms.Length - 1)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[12]);
-                                    }
-                                }
-
-                                continue;
-                            }
-
-                            // Bottom Right Corner of the corridor
-                            if (y == 0 && x == corridors[i].corridorLength - 1)
-                            {
-                                // Check if the bottom Left corner of the room is being overlapped by the bottom right corner of the corridor
-                                Vector3Int corridorBottomRightCorner = new Vector3Int(corridors[i].startXPos + corridors[i].corridorLength - 1, corridors[i].startYPos, 0);
-
-                                for (int j = 0; j < rooms.Length; j++)
-                                {
-                                    Vector3Int roomBottomLeftCorner = new Vector3Int(rooms[j].xPos, rooms[j].yPos, 0);
-
-                                    if (corridorBottomRightCorner == roomBottomLeftCorner)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
-                                        break;
-                                    }
-                                    else if (j == rooms.Length - 1)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[13]);
-                                    }
-                                }
-
-                                continue;
-                            }
-
-                            // Top Left Corner of the corridor
-                            if (y == 2 && x == 0)
-                            {
-                                // Check if the top right corner of the room is being overlapped by the top left corner of the corridor
-                                Vector3Int corridorTopLeftCorner = new Vector3Int(corridors[i].startXPos, corridors[i].startYPos + 2, 0);
-
-                                for (int j = 0; j < rooms.Length; j++)
-                                {
-                                    Vector3Int roomTopRightCorner = new Vector3Int(rooms[j].xPos + rooms[j].width - 1, rooms[j].yPos + rooms[j].height - 1, 0);
-
-                                    if (corridorTopLeftCorner == roomTopRightCorner)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
-                                        break;
-                                    }
-                                    else if (j == rooms.Length - 1)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[10]);
-                                    }
-                                }
-
-                                continue;
-                            }
-
-                            // Top Right Corner of the corridor
-                            if (y == 2 && x == corridors[i].corridorLength - 1)
-                            {
-                                // Check if the top left corner of the room is being overlapped by the top right corner of the corridor
-                                Vector3Int corridorTopRightCorner = new Vector3Int(corridors[i].startXPos + corridors[i].corridorLength, corridors[i].startYPos + 2, 0);
-
-                                for (int j = 0; j < rooms.Length; j++)
-                                {
-                                    Vector3Int roomTopLeftCorner = new Vector3Int(rooms[j].xPos, rooms[j].yPos + rooms[j].height - 1, 0);
-
-                                    if (corridorTopRightCorner == roomTopLeftCorner)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
-                                        break;
-                                    }
-                                    else if (j == rooms.Length - 1)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[11]);
-                                    }
-                                }
-
-                                continue;
-                            }
-
-                            if (y == 0)
-                            {
-                                tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
-                            }
-
-                            if (y == 2)
-                            {
-                                tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
-                            }
-                        }
-                    }
+                    InstantiateHorizontalCorridors(tileGridForFloors, tileGridForWalls, corridors[i]);
                     break;
                 case Direction.South:
                     InstantiateVerticalCorridors(tileGridForFloors, tileGridForWalls, corridors[i], i);
                     break;
                 case Direction.West:
-                    for (int x = 0; x < corridors[i].corridorLength; x++)
-                    {
-                        tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(x, 1, 0), tilePalette[0]);
-                    }
-
-                    for (int y = 0; y < 3; y++)
-                    {
-                        for (int x = 0; x < corridors[i].corridorLength; x++)
-                        {
-                            if (x == 0 && y == 0)
-                            {
-                                // Check if the bottom right corner of the room is being overlapped by the bottom left corner of the corridor
-                                Vector3Int corridorBottomLeftCorner = new Vector3Int(corridors[i].EndPositionX, corridors[i].EndPositionY, 0);
-
-                                for (int j = 0; j < rooms.Length; j++)
-                                {
-                                    Vector3Int roomBottomRightCorner = new Vector3Int(rooms[j].xPos + rooms[j].width - 1, rooms[j].yPos, 0);
-                                    
-                                    if (corridorBottomLeftCorner == roomBottomRightCorner)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
-                                        break;
-                                    }
-                                    else if (j == rooms.Length - 1)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[12]);
-                                    }
-                                }
-
-                                continue;
-                            }
-
-                            if (y == 0 && x == corridors[i].corridorLength - 1)
-                            {
-                                // Check if the bottom Left corner of the room is being overlapped by the bottom right corner of the corridor
-                                Vector3Int corridorBottomRightCorner = new Vector3Int(corridors[i].startXPos + corridors[i].corridorLength - 1, corridors[i].startYPos, 0);
-
-                                for (int j = 0; j < rooms.Length; j++)
-                                {
-                                    Vector3Int roomBottomLeftCorner = new Vector3Int(rooms[j].xPos, rooms[j].yPos, 0);
-
-                                    if (corridorBottomRightCorner == roomBottomLeftCorner)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
-                                        break;
-                                    }
-                                    else if (j == rooms.Length - 1)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[13]);
-                                    }
-                                }
-
-                                continue;
-                            }
-
-                            if (y == 2 && x == 0)
-                            {
-                                // Check if the top right corner of the room is being overlapped by the top left corner of the corridor
-                                Vector3Int corridorTopLeftCorner = new Vector3Int(corridors[i].startXPos, corridors[i].startYPos + 2, 0);
-
-                                for (int j = 0; j < rooms.Length; j++)
-                                {
-                                    Vector3Int roomTopRightCorner = new Vector3Int(rooms[j].xPos + rooms[j].width - 1, rooms[j].yPos + rooms[j].height - 1, 0);
-
-                                    if (corridorTopLeftCorner == roomTopRightCorner)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
-                                        break;
-                                    }
-                                    else if (j == rooms.Length - 1)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[10]);
-                                    }
-                                }
-
-                                continue;
-                            }
-
-                            if (y == 2 && x == corridors[i].corridorLength - 1)
-                            {
-                                // Check if the top left corner of the room is being overlapped by the top right corner of the corridor
-                                Vector3Int corridorTopRightCorner = new Vector3Int(corridors[i].startXPos + corridors[i].corridorLength, corridors[i].startYPos + 2, 0);
-
-                                for (int j = 0; j < rooms.Length; j++)
-                                {
-                                    Vector3Int roomTopLeftCorner = new Vector3Int(rooms[j].xPos, rooms[j].yPos + rooms[j].height - 1, 0);
-
-                                    if (corridorTopRightCorner == roomTopLeftCorner)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
-                                        break;
-                                    }
-                                    else if (j == rooms.Length - 1)
-                                    {
-                                        tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[11]);
-                                    }
-                                }
-
-                                continue;
-                            }
-
-                            if (y == 0)
-                            {
-                                tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
-                            }
-
-                            if (y == 2)
-                            {
-                                tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
-                            }
-                        }
-                    }
+                    InstantiateHorizontalCorridors(tileGridForFloors, tileGridForWalls, corridors[i]);
                     break;
             }
 

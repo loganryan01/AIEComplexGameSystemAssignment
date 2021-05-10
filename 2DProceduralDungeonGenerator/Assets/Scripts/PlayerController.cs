@@ -6,11 +6,14 @@ using UnityEngine.Tilemaps;
 public class PlayerController : MonoBehaviour
 {
     Rigidbody2D rb;
+    public DungeonGenerator dungeonGenerator;
     
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        gameObject.transform.position = new Vector2(dungeonGenerator.columns / 2, dungeonGenerator.rows / 2);
     }
 
     // Update is called once per frame
@@ -28,17 +31,73 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.GetComponent<Tilemap>())
         {
-            Vector3 hitPosition = Vector3.zero;
-            foreach (ContactPoint2D hit in collision.contacts)
-            {
-                hitPosition.x = hit.point.x - 0.01f * hit.normal.x;
-                hitPosition.y = hit.point.y - 0.01f * hit.normal.y;
-                Tilemap tilemap = collision.gameObject.GetComponent<Tilemap>();
-                Vector3Int cellPosition = tilemap.WorldToCell(hitPosition);
-                TileBase tile = tilemap.GetTile(cellPosition);
+            Grid parentGrid = collision.gameObject.GetComponentInParent<Grid>();
 
-                Debug.Log(tile.name);
+            Tilemap tilemap = collision.gameObject.GetComponent<Tilemap>();
+            BoundsInt tilemapBounds = tilemap.cellBounds;
+            
+            Vector3Int worldToCellPosition = parentGrid.WorldToCell(transform.position);
+            Debug.Log(worldToCellPosition);
+
+            TileBase tile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
+
+            int roomHeightHalf = tilemapBounds.yMax / 2;
+            int roomWidthHalf = tilemapBounds.xMax / 2;
+
+            if (worldToCellPosition.x < roomWidthHalf && tile == null)
+            {
+                worldToCellPosition.x -= 1;
+
+                tile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
+                worldToCellPosition = parentGrid.WorldToCell(transform.position);
+            }
+            
+            if (worldToCellPosition.x > roomWidthHalf && tile == null)
+            {
+                worldToCellPosition.x += 1;
+
+                tile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
+                worldToCellPosition = parentGrid.WorldToCell(transform.position);
+            }
+
+            if (worldToCellPosition.y < roomHeightHalf && tile == null)
+            {
+                worldToCellPosition.y -= 1;
+
+                tile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
+                worldToCellPosition = parentGrid.WorldToCell(transform.position);
+            }
+            
+            if (worldToCellPosition.y > roomHeightHalf && tile == null)
+            {
+                worldToCellPosition.y += 1;
+
+                tile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
+                worldToCellPosition = parentGrid.WorldToCell(transform.position);
+            }
+
+            if (tile)
+            {
+                Debug.Log(tile);
             }
         }
+
+        //if (collision.contactCount > 0)
+        //{
+        //    Vector3 hitPosition = Vector3.zero;
+        //    foreach (ContactPoint2D hit in collision.contacts)
+        //    {
+        //        hitPosition.x = hit.point.x - 0.01f * hit.normal.x;
+        //        hitPosition.y = hit.point.y - 0.01f * hit.normal.y;
+        //        Tilemap tilemap = collision.gameObject.GetComponent<Tilemap>();
+        //        Vector3Int cellPosition = tilemap.WorldToCell(hitPosition);
+        //        TileBase tile = tilemap.GetTile(cellPosition);
+
+        //        if (tile != null)
+        //        {
+        //            Debug.Log(tile.name);
+        //        }
+        //    }
+        //}
     }
 }
