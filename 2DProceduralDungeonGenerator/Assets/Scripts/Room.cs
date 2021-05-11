@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿/*-------------------------------------------
+    File Name: Room.cs
+    Purpose: Store information about the room
+    Author: Logan Ryan
+    Modified: 11/05/2021
+---------------------------------------------
+    Copyright 2021 Logan Ryan
+-------------------------------------------*/
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

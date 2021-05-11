@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿/*-----------------------------------------------------
+    File Name: WizardTileset.cs
+    Purpose: Create a tile pallette for the room editor
+    Author: Logan Ryan
+    Modified: 11/05/2021
+-------------------------------------------------------
+    Copyright 2021 Logan Ryan
+-----------------------------------------------------*/
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;

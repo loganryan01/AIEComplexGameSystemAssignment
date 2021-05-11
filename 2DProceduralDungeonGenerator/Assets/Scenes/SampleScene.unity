@@ -1325,6 +1325,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1922601666866113989, guid: 8936829edf7849d439b068388309a44e, type: 3}
+      propertyPath: m_Size.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1922601666866113989, guid: 8936829edf7849d439b068388309a44e, type: 3}
+      propertyPath: m_Size.y
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 1922601666866113992, guid: 8936829edf7849d439b068388309a44e, type: 3}
       propertyPath: m_Name
       value: Player
@@ -1333,6 +1341,10 @@ PrefabInstance:
       propertyPath: dungeonGenerator
       value: 
       objectReference: {fileID: 67121350}
+    - target: {fileID: 1922601666866113994, guid: 8936829edf7849d439b068388309a44e, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1922601666866113995, guid: 8936829edf7849d439b068388309a44e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.63
@@ -1388,6 +1400,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 203681351}
+  - component: {fileID: 203681352}
   m_Layer: 0
   m_Name: Corridor 2
   m_TagString: Untagged
@@ -1411,6 +1424,18 @@ Transform:
   m_Father: {fileID: 1341217939}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &203681352
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203681350}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &268967556
 GameObject:
   m_ObjectHideFlags: 0
@@ -3326,6 +3351,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 341322955}
+  - component: {fileID: 341322956}
   m_Layer: 0
   m_Name: Corridor 6
   m_TagString: Untagged
@@ -3349,6 +3375,18 @@ Transform:
   m_Father: {fileID: 1341217939}
   m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &341322956
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 341322954}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &349978169
 GameObject:
   m_ObjectHideFlags: 0
@@ -102145,6 +102183,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1049594615}
+  - component: {fileID: 1049594616}
   m_Layer: 0
   m_Name: Corridor 7
   m_TagString: Untagged
@@ -102168,6 +102207,18 @@ Transform:
   m_Father: {fileID: 1341217939}
   m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &1049594616
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1049594614}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &1116808639
 GameObject:
   m_ObjectHideFlags: 0
@@ -102360,6 +102411,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1139108868}
+  - component: {fileID: 1139108869}
   m_Layer: 0
   m_Name: Corridor 4
   m_TagString: Untagged
@@ -102383,6 +102435,18 @@ Transform:
   m_Father: {fileID: 1341217939}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &1139108869
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1139108867}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &1192828220
 GameObject:
   m_ObjectHideFlags: 0
@@ -106782,6 +106846,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1402215908}
+  - component: {fileID: 1402215909}
   m_Layer: 0
   m_Name: Corridor 0
   m_TagString: Untagged
@@ -106805,6 +106870,18 @@ Transform:
   m_Father: {fileID: 1341217939}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &1402215909
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402215907}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &1408635655
 GameObject:
   m_ObjectHideFlags: 0
@@ -107187,6 +107264,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1523195275}
+  - component: {fileID: 1523195276}
   m_Layer: 0
   m_Name: Corridor 5
   m_TagString: Untagged
@@ -107210,6 +107288,18 @@ Transform:
   m_Father: {fileID: 1341217939}
   m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &1523195276
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1523195274}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &1643190215
 GameObject:
   m_ObjectHideFlags: 0
@@ -109094,6 +109184,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1842366884}
+  - component: {fileID: 1842366885}
   m_Layer: 0
   m_Name: Corridor 8
   m_TagString: Untagged
@@ -109117,6 +109208,18 @@ Transform:
   m_Father: {fileID: 1341217939}
   m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &1842366885
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1842366883}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &1888802024
 GameObject:
   m_ObjectHideFlags: 0
@@ -111560,6 +111663,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1997506178}
+  - component: {fileID: 1997506179}
   m_Layer: 0
   m_Name: Corridor 3
   m_TagString: Untagged
@@ -111583,6 +111687,18 @@ Transform:
   m_Father: {fileID: 1341217939}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &1997506179
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1997506177}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &2038240635
 GameObject:
   m_ObjectHideFlags: 0
@@ -111963,6 +112079,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2059810751}
+  - component: {fileID: 2059810752}
   m_Layer: 0
   m_Name: Corridor 1
   m_TagString: Untagged
@@ -111986,6 +112103,18 @@ Transform:
   m_Father: {fileID: 1341217939}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &2059810752
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059810750}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &2069032450
 GameObject:
   m_ObjectHideFlags: 0

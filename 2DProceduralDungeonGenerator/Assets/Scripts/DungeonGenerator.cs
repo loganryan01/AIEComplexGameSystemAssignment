@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿/*----------------------------------------------
+    File Name: DungeonGenerator.cs
+    Purpose: Generate dungeons for the developer
+    Author: Logan Ryan
+    Modified: 11/05/2021
+------------------------------------------------
+    Copyright 2021 Logan Ryan
+----------------------------------------------*/
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -7,6 +15,7 @@ using UnityEngine.Tilemaps;
 
 public class DungeonGenerator : MonoBehaviour
 {
+    // Enum to store the type of tiles in the dungeon
     public enum TileType
     {
         NULL = 0,
@@ -14,27 +23,21 @@ public class DungeonGenerator : MonoBehaviour
         CORRIDOR = 2,
     }
 
-    public int columns = 100;
-    public int rows = 100;
-    public int numberOfRooms;
-    public IntRange corridorLength = new IntRange(3, 10);
-    public GameObject[] roomPrefabs;
+    public int columns = 100;                               // Number of columns in the grid
+    public int rows = 100;                                  // Number of rows in the grid
+    public int numberOfRooms;                               // Number of rooms in the dungeon
+    public IntRange corridorLength = new IntRange(3, 10);   // Lengths of the corridor
+    public GameObject[] roomPrefabs;                        // Rooms that are in the dungeon
 
-    private bool success = false;
-    private GameObject boardHolder;
-    private Room[] rooms;
-    private Corridor[] corridors;
-    private TileType[][] tiles;
+    private bool success = false;                           // Dungeon was successfully created
+    private GameObject boardHolder;                         // GameObject that holds the dungeon
+    private Room[] rooms;                                   // Array to store the rooms in the dungeon
+    private Corridor[] corridors;                           // Array to store the corridors in the dungeon
+    private TileType[][] tiles;                             // Jagged tile array that stores the type of tiles in the dungeon
 
-    private StreamReader reader;
-    private string text;
-    List<TileBase> tilePalette = new List<TileBase>();
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private StreamReader reader;                            // Reader for text files
+    private string text;                                    // Line of text from the text file
+    List<TileBase> tilePalette = new List<TileBase>();      // Tiles to use in the dungeon
 
     public void GenerateDungeon()
     {
@@ -134,9 +137,6 @@ public class DungeonGenerator : MonoBehaviour
         // Check if rooms are overlapping
         CheckRoom2RoomCollision();
 
-        // Check if a room overlaps a corridor
-        //CheckRoom2CorridorCollision();
-
         // Check if corridors overlap
         CheckCorridor2CorridorCollision();
     }
@@ -158,56 +158,12 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
-    void CheckRoom2CorridorCollision()
-    {
-        for (int i = 0; i < rooms.Length; i++)
-        {
-            for (int j = 0; j < corridors.Length; j++)
-            {
-                // L1: rooms[i].xPos, rooms[i].yPos + rooms[i].height + 1
-                // L2: corridors[j].startXPos, corridors[j].startYPos + corridors[j].corridorsLength + 1
-                // R1: rooms[i].xPos + rooms[i].width + 1, rooms[i].yPos
-                // R2: corridors[j].startXPos + 4, corridors[j].startYPos
-                if (i == j)
-                    continue;
-
-                Rect room1Rect = new Rect(rooms[i].xPos, rooms[i].yPos, rooms[i].width, rooms[i].height);
-                Rect room2Rect = new Rect();
-
-                switch (corridors[j].direction)
-                {
-                    case Direction.North:
-                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos + 1, 3, corridors[j].corridorLength - 1);
-                        break;
-                    case Direction.East:
-                        room2Rect = new Rect(corridors[j].startXPos + 1, corridors[j].startYPos, corridors[j].corridorLength - 1, 3);
-                        break;
-                    case Direction.South:
-                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos - 1, 3, corridors[j].corridorLength - 1);
-                        break;
-                    case Direction.West:
-                        room2Rect = new Rect(corridors[j].startXPos + 1, corridors[j].startYPos, corridors[j].corridorLength - 1, 3);
-                        break;
-                }
-
-                if (room1Rect.Overlaps(room2Rect))
-                {
-                    success = false;
-                }
-            }
-        }
-    }
-
     void CheckCorridor2CorridorCollision()
     {
         for (int i = 0; i < corridors.Length; i++)
         {
             for (int j = i + 1; j < corridors.Length; j++)
             {
-                // L1: corridors[i].startXPos, corridors[i].startYPos + corridors[i].corridorsLength + 1
-                // L2: corridors[j].startXPos, corridors[j].startYPos + corridors[j].corridorsLength + 1
-                // R1: corridors[i].startXPos + 4, corridors[i].startYPos
-                // R2: corridors[j].startXPos + 4, corridors[j].startYPos
                 Rect room1Rect = new Rect();
 
                 switch (corridors[i].direction)
@@ -276,7 +232,6 @@ public class DungeonGenerator : MonoBehaviour
                         success = false;
                         return;
                     }
-                    //Debug.Log(xCoord + " " + yCoord);
                     // The coordinates in the jagged array are based on the room's position and it's width and height
                     tiles[xCoord][yCoord] = TileType.ROOM;
                 }
@@ -349,7 +304,6 @@ public class DungeonGenerator : MonoBehaviour
                         break;
                     case Direction.East:
                         Vector3Int eastCorridorPosition = new Vector3Int(corridors[i].startXPos, corridors[i].startYPos, 0);
-                        //Debug.Log("Corridor " + i + " Start Position: " + eastCorridorPosition);
                         Vector3Int eastCorridorCellPosition = roomWallsTilemap.WorldToCell(eastCorridorPosition);
                         int eastCorridorEntranceYPosition = eastCorridorCellPosition.y + 1;
                         roomWallsTilemap.SetTile(new Vector3Int(eastCorridorCellPosition.x, eastCorridorEntranceYPosition, 0), tilePalette[18]);

@@ -1,12 +1,20 @@
-﻿using System.Collections;
+﻿/*-----------------------------------------
+    File Name: PlayerController.cs
+    Purpose: Control the player's character
+    Author: Logan Ryan
+    Modified: 11/05/2021
+-------------------------------------------
+    Copyright 2021 Logan Ryan
+-----------------------------------------*/
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class PlayerController : MonoBehaviour
 {
-    Rigidbody2D rb;
-    public DungeonGenerator dungeonGenerator;
+    Rigidbody2D rb;                             // Player's rigidbody
+    public DungeonGenerator dungeonGenerator;   // The dungeon generator script
     
     // Start is called before the first frame update
     void Start()
@@ -31,73 +39,60 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.GetComponent<Tilemap>())
         {
+            List<TileBase> tileList = new List<TileBase>();
+            
             Grid parentGrid = collision.gameObject.GetComponentInParent<Grid>();
 
             Tilemap tilemap = collision.gameObject.GetComponent<Tilemap>();
-            BoundsInt tilemapBounds = tilemap.cellBounds;
             
             Vector3Int worldToCellPosition = parentGrid.WorldToCell(transform.position);
-            Debug.Log(worldToCellPosition);
 
-            TileBase tile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
+            // Check left of the player
+            worldToCellPosition.x -= 1;
 
-            int roomHeightHalf = tilemapBounds.yMax / 2;
-            int roomWidthHalf = tilemapBounds.xMax / 2;
-
-            if (worldToCellPosition.x < roomWidthHalf && tile == null)
+            TileBase leftTile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
+            if (leftTile != null)
             {
-                worldToCellPosition.x -= 1;
+                Debug.Log(leftTile.name);
+            }
+            tileList.Add(leftTile);
 
-                tile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
-                worldToCellPosition = parentGrid.WorldToCell(transform.position);
+            worldToCellPosition = parentGrid.WorldToCell(transform.position);
+
+            // Check right of the player
+            worldToCellPosition.x += 1;
+
+            TileBase rightTile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
+            if (rightTile != null)
+            {
+                Debug.Log(rightTile.name);
+            }
+            tileList.Add(rightTile);
+
+            worldToCellPosition = parentGrid.WorldToCell(transform.position);
+
+            // Check below the player
+            worldToCellPosition.y -= 1;
+
+            TileBase bottomTile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
+            if (bottomTile != null)
+            {
+                Debug.Log(bottomTile.name);
+            }
+            tileList.Add(bottomTile);
+
+            worldToCellPosition = parentGrid.WorldToCell(transform.position);
+
+            // Check above the player
+            worldToCellPosition.y += 1;
+
+            TileBase topTile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
+            if (topTile != null)
+            {
+                Debug.Log(topTile.name);
             }
             
-            if (worldToCellPosition.x > roomWidthHalf && tile == null)
-            {
-                worldToCellPosition.x += 1;
-
-                tile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
-                worldToCellPosition = parentGrid.WorldToCell(transform.position);
-            }
-
-            if (worldToCellPosition.y < roomHeightHalf && tile == null)
-            {
-                worldToCellPosition.y -= 1;
-
-                tile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
-                worldToCellPosition = parentGrid.WorldToCell(transform.position);
-            }
-            
-            if (worldToCellPosition.y > roomHeightHalf && tile == null)
-            {
-                worldToCellPosition.y += 1;
-
-                tile = tilemap.GetTile(new Vector3Int(worldToCellPosition.x, worldToCellPosition.y, 0));
-                worldToCellPosition = parentGrid.WorldToCell(transform.position);
-            }
-
-            if (tile)
-            {
-                Debug.Log(tile);
-            }
+            tileList.Add(topTile);
         }
-
-        //if (collision.contactCount > 0)
-        //{
-        //    Vector3 hitPosition = Vector3.zero;
-        //    foreach (ContactPoint2D hit in collision.contacts)
-        //    {
-        //        hitPosition.x = hit.point.x - 0.01f * hit.normal.x;
-        //        hitPosition.y = hit.point.y - 0.01f * hit.normal.y;
-        //        Tilemap tilemap = collision.gameObject.GetComponent<Tilemap>();
-        //        Vector3Int cellPosition = tilemap.WorldToCell(hitPosition);
-        //        TileBase tile = tilemap.GetTile(cellPosition);
-
-        //        if (tile != null)
-        //        {
-        //            Debug.Log(tile.name);
-        //        }
-        //    }
-        //}
     }
 }

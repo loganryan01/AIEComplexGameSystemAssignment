@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿/*-----------------------------------------------
+    File Name: Corridor.cs
+    Purpose: Store information about the corridor
+    Author: Logan Ryan
+    Modified: 11/05/2021
+-------------------------------------------------
+    Copyright 2021 Logan Ryan
+-----------------------------------------------*/
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,8 +31,8 @@ public class Corridor
             if (direction == Direction.North || direction == Direction.South)
                 return startXPos;
             if (direction == Direction.East)
-                return startXPos + corridorLength /*- 1*/;
-            return startXPos - corridorLength /*+ 1*/;
+                return startXPos + corridorLength;
+            return startXPos - corridorLength;
         }
     }
 
@@ -35,8 +43,8 @@ public class Corridor
             if (direction == Direction.East || direction == Direction.West)
                 return startYPos;
             if (direction == Direction.North)
-                return startYPos + corridorLength /*- 1*/;
-            return startYPos - corridorLength /*+ 1*/;
+                return startYPos + corridorLength;
+            return startYPos - corridorLength;
         }
     }
 

@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿/*--------------------------------------------------------
+    File Name: DungeonGeneratorEditor.cs
+    Purpose: Add a button for the dungeon generator script
+    Author: Logan Ryan
+    Modified: 11/05/2021
+----------------------------------------------------------
+    Copyright 2021 Logan Ryan
+--------------------------------------------------------*/
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -16,17 +24,5 @@ public class DungeonGeneratorEditor : Editor
         {
             dungeonGenerator.GenerateDungeon();
         }
-    }
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

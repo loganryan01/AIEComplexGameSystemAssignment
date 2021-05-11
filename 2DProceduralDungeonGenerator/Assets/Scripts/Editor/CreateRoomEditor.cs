@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿/*------------------------------------------------
+    File Name: CreateRoomEditor.cs
+    Purpose: Create rooms for the developer to use
+    Author: Logan Ryan
+    Modified: 11/05/2021
+--------------------------------------------------
+    Copyright 2021 Logan Ryan
+------------------------------------------------*/
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
