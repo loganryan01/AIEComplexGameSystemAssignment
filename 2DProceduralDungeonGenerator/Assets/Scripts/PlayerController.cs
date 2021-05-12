@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -109,6 +110,8 @@ public class PlayerController : MonoBehaviour
         {
             if (tileList[i] != null)
             {
+                Debug.Log(tileList[i].name);
+
                 if (tileList[i].name == "SwordChest")
                 {
                     gameObject.GetComponent<SpriteRenderer>().sprite = swordSprite;
@@ -119,6 +122,15 @@ public class PlayerController : MonoBehaviour
                 {
                     tilemap.SetTile(tilePositions[i], null);
                     coins++;
+                }
+                else if (tileList[i].name == "Exit")
+                {
+                    
+                    if (swordEquipped)
+                    {
+                        
+                        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+                    }
                 }
             }
         }

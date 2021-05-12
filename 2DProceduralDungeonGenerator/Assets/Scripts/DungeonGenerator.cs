@@ -21,6 +21,7 @@ public class RoomTemplate
     public int numberOfRooms;
 }
 
+#if (UNITY_EDITOR)
 public class DungeonGenerator : MonoBehaviour
 {
     // Enum to store the type of tiles in the dungeon
@@ -61,7 +62,7 @@ public class DungeonGenerator : MonoBehaviour
         {
             boardHolder = GameObject.Find("BoardHolder");
         }
-        
+
         if (boardHolder != null)
         {
             DestroyImmediate(boardHolder);
@@ -333,7 +334,7 @@ public class DungeonGenerator : MonoBehaviour
                     if (xCoord < 0 || xCoord >= tiles.Length ||
                         yCoord < 0 || yCoord >= tiles.Length)
                     {
-                        
+
                         success = false;
                         return;
                     }
@@ -480,7 +481,7 @@ public class DungeonGenerator : MonoBehaviour
             corridorStartXPos = corridor.EndPositionX;
             corridorStartYPos = corridor.EndPositionY;
         }
-        
+
         for (int y = 0; y < corridor.corridorLength; y++)
         {
             tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(1, y, 0), tilePalette[0]);
@@ -833,7 +834,7 @@ public class DungeonGenerator : MonoBehaviour
             {
                 tilePalette.Add(null);
             }
-            
+
             // Set Tile's
             string[] results = AssetDatabase.FindAssets(text + " t:Tile");
 
@@ -849,4 +850,7 @@ public class DungeonGenerator : MonoBehaviour
             }
         }
     }
+
 }
+#endif
+

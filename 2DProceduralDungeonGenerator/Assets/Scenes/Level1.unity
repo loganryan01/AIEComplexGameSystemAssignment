@@ -107096,6 +107096,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1667275992}
+  - component: {fileID: 1667275993}
   m_Layer: 0
   m_Name: Finish(Clone)
   m_TagString: Untagged
@@ -107120,6 +107121,18 @@ Transform:
   m_Father: {fileID: 642964934}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &1667275993
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1667275991}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &1707914724
 GameObject:
   m_ObjectHideFlags: 0
@@ -107805,6 +107818,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1828739009}
+  - component: {fileID: 1828739010}
   m_Layer: 0
   m_Name: Start(Clone)
   m_TagString: Untagged
@@ -107829,6 +107843,18 @@ Transform:
   m_Father: {fileID: 642964934}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!156049354 &1828739010
+Grid:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828739008}
+  m_Enabled: 1
+  m_CellSize: {x: 1, y: 1, z: 1}
+  m_CellGap: {x: 0, y: 0, z: 0}
+  m_CellLayout: 0
+  m_CellSwizzle: 0
 --- !u!1 &1945732066
 GameObject:
   m_ObjectHideFlags: 0
