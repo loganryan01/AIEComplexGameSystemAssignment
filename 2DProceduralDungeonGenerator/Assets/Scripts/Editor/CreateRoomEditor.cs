@@ -246,6 +246,7 @@ public class CreateRoomEditor : EditorWindow
     private void CreateRoom()
     {
         room = new GameObject(roomName);
+        room.AddComponent<Grid>();
 
         GameObject tileGridForFloors = new GameObject("Floors");
         tileGridForFloors.AddComponent<Tilemap>();

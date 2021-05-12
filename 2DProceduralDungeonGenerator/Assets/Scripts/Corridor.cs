@@ -2,7 +2,7 @@
     File Name: Corridor.cs
     Purpose: Store information about the corridor
     Author: Logan Ryan
-    Modified: 11/05/2021
+    Modified: 12/05/2021
 -------------------------------------------------
     Copyright 2021 Logan Ryan
 -----------------------------------------------*/
@@ -82,9 +82,6 @@ public class Corridor
         {
             // If the chosen direction is North (up)...
             case Direction.North:
-                //Debug.Log("Minimum xPos: " + (room.xPos + 1));
-                //Debug.Log("Maximum xPos: " + (room.xPos + room.width - 1));
-
                 // ... the starting position in the x axis can be random but within the width of the room.
                 startXPos = Random.Range(room.xPos + 1, room.xPos + room.width - 2);
 

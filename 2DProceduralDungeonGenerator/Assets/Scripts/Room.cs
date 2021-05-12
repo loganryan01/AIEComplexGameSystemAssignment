@@ -2,7 +2,7 @@
     File Name: Room.cs
     Purpose: Store information about the room
     Author: Logan Ryan
-    Modified: 11/05/2021
+    Modified: 12/05/2021
 ---------------------------------------------
     Copyright 2021 Logan Ryan
 -------------------------------------------*/
@@ -46,10 +46,6 @@ public class Room
         {
             // If the corridor entering this room is going north...
             case Direction.North:
-                // ... the height of the room mustn't go beyond the board so it must be clamped based
-                // on the height of the board (rows) and the end of corridor that leads to the room
-                //height = Mathf.Clamp(height, 1, rows - corridor.EndPositionY);
-
                 // The y coordinate of the room must be at the end of the corridor (since corridor leads to the bottom of the room).
                 yPos = corridor.EndPositionY - 1;
 
@@ -59,24 +55,20 @@ public class Room
 
                 // This must be clamped to ensure that the room doesn't go off the board
                 xPos = Mathf.Clamp(xPos, 0, columns - width);
-                //Debug.Log((corridor.EndPositionX/* - width + 2*/));
                 break;
             case Direction.East:
-                //width = Mathf.Clamp(width, 1, columns - corridor.EndPositionX);
                 xPos = corridor.EndPositionX - 1;
 
                 yPos = Random.Range(corridor.EndPositionY, corridor.EndPositionY - (height - 3));
                 yPos = Mathf.Clamp(yPos, 0, rows - height);
                 break;
             case Direction.South:
-                //height = Mathf.Clamp(height, 1, corridor.EndPositionY);
                 yPos = corridor.EndPositionY - height + 1;
 
                 xPos = Random.Range(corridor.EndPositionX, corridor.EndPositionX - (width - 3));
                 xPos = Mathf.Clamp(xPos, 0, columns - width);
                 break;
             case Direction.West:
-                //width = Mathf.Clamp(width, 1, corridor.EndPositionX);
                 xPos = corridor.EndPositionX - width + 1;
 
                 yPos = Random.Range(corridor.EndPositionY, corridor.EndPositionY - (height - 3));

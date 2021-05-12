@@ -103,8 +103,6 @@ public class WizardTileset : ScriptableWizard
                            verticalCorridorBottomRightTile.name,
                            doorTileName };
 
-        
-
         StreamWriter writer = new StreamWriter(path, false);
         foreach (string name in names)
         {
