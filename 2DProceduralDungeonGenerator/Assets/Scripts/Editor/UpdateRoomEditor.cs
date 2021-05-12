@@ -171,6 +171,7 @@ public class UpdateRoomEditor : EditorWindow
     private void PreviewAllTiles()
     {
         allTilesPreview = new GameObject("RoomPreview");
+        allTilesPreview.AddComponent<Grid>();
 
         PreviewFloor();
         PreviewWalls();
@@ -180,7 +181,7 @@ public class UpdateRoomEditor : EditorWindow
         wallTiles.transform.SetParent(allTilesPreview.transform);
         additionalTilesPreview.transform.SetParent(allTilesPreview.transform);
 
-        allTilesPreview.transform.SetParent(GameObject.Find("Grid").transform);
+        //allTilesPreview.transform.SetParent(GameObject.Find("Grid").transform);
     }
 
     private void PreviewAdditionalTiles()
@@ -292,6 +293,7 @@ public class UpdateRoomEditor : EditorWindow
         }
         
         room = new GameObject(roomName);
+        room.AddComponent<Grid>();
 
         GameObject tileGridForFloors = new GameObject("Floors");
         tileGridForFloors.AddComponent<Tilemap>();

@@ -6,12 +6,20 @@
 ------------------------------------------------
     Copyright 2021 Logan Ryan
 ----------------------------------------------*/
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+
+[Serializable]
+public class RoomTemplate
+{
+    public GameObject roomPrefab;
+    public int numberOfRooms;
+}
 
 public class DungeonGenerator : MonoBehaviour
 {
@@ -23,11 +31,19 @@ public class DungeonGenerator : MonoBehaviour
         CORRIDOR = 2,
     }
 
+    public struct MyStruct
+    {
+        public GameObject roomPrefab;
+        public int numberOfRooms;
+    }
+
     public int columns = 100;                               // Number of columns in the grid
     public int rows = 100;                                  // Number of rows in the grid
     public int numberOfRooms;                               // Number of rooms in the dungeon
     public IntRange corridorLength = new IntRange(3, 10);   // Lengths of the corridor
-    public GameObject[] roomPrefabs;                        // Rooms that are in the dungeon
+    public GameObject startingRoom;                         // Starting room template
+    public GameObject finishingRoom;                        // Finishing room template
+    public RoomTemplate[] roomPrefabs;                      // Room templates
 
     private bool success = false;                           // Dungeon was successfully created
     private GameObject boardHolder;                         // GameObject that holds the dungeon
@@ -91,23 +107,71 @@ public class DungeonGenerator : MonoBehaviour
     void CreateRoomsAndCorridors()
     {
         success = true;
-        
-        // Create the rooms array with a size of the number of rooms
-        rooms = new Room[numberOfRooms];
 
-        // There should be one less corridor than there is rooms
-        corridors = new Corridor[numberOfRooms - 1];
+        int size = 0;
+        int[] roomsAvailable = new int[roomPrefabs.Length];
+
+        for (int i = 0; i < roomPrefabs.Length; i++)
+        {
+            if (roomPrefabs[i].numberOfRooms > 0)
+            {
+                size += roomPrefabs[i].numberOfRooms;
+            }
+
+            roomsAvailable[i] = roomPrefabs[i].numberOfRooms;
+        }
+
+        if (startingRoom != null && finishingRoom != null)
+        {
+            size += 2;
+        }
+        else if (startingRoom != null || finishingRoom != null)
+        {
+            size += 1;
+        }
+
+        if (size < numberOfRooms)
+        {
+            // Create the rooms array with a size of the number of room prefabs
+            rooms = new Room[size];
+
+            // There should be one less corridor than there is rooms
+            corridors = new Corridor[size - 1];
+        }
+        else
+        {
+            // Create the rooms array with a size of the number of rooms
+            rooms = new Room[numberOfRooms];
+
+            // There should be one less corridor than there is rooms
+            corridors = new Corridor[numberOfRooms - 1];
+        }
 
         // Create the first room and corridor
         rooms[0] = new Room();
         corridors[0] = new Corridor();
 
-        int roomIndex = Random.Range(0, roomPrefabs.Length);
+        int roomIndex = UnityEngine.Random.Range(0, roomPrefabs.Length);
 
-        BoundsInt roomBounds = roomPrefabs[roomIndex].GetComponentInChildren<Tilemap>().cellBounds;
+        while (roomsAvailable[roomIndex] == 0)
+        {
+            roomIndex = UnityEngine.Random.Range(0, roomPrefabs.Length);
+        }
+
+        BoundsInt roomBounds = roomPrefabs[roomIndex].roomPrefab.GetComponentInChildren<Tilemap>().cellBounds;
 
         // Setup the first room
-        rooms[0].SetupFirstRoom(roomBounds, roomPrefabs[roomIndex], columns, rows);
+        if (startingRoom != null)
+        {
+            roomBounds = startingRoom.GetComponentInChildren<Tilemap>().cellBounds;
+
+            rooms[0].SetupFirstRoom(roomBounds, startingRoom, columns, rows);
+        }
+        else
+        {
+            rooms[0].SetupFirstRoom(roomBounds, roomPrefabs[roomIndex].roomPrefab, columns, rows);
+            roomsAvailable[0]--;
+        }
 
         // Setup the first corridor
         corridors[0].SetupCorridor(rooms[0], corridorLength, columns, rows, true);
@@ -118,10 +182,51 @@ public class DungeonGenerator : MonoBehaviour
             rooms[i] = new Room();
 
             // Setup the room based on the previous corridor.
-            roomIndex = Random.Range(0, roomPrefabs.Length);
+            roomIndex = UnityEngine.Random.Range(0, roomPrefabs.Length);
 
-            roomBounds = roomPrefabs[roomIndex].GetComponentInChildren<Tilemap>().cellBounds;
-            rooms[i].SetupRoom(roomBounds, roomPrefabs[roomIndex], columns, rows, corridors[i - 1]);
+            int numberOfAvailableRooms = 0;
+
+            // Check if there are available rooms
+            for (int j = 0; j < roomPrefabs.Length; j++)
+            {
+                if (roomsAvailable[j] > 0)
+                {
+                    numberOfAvailableRooms++;
+                }
+            }
+
+            if (numberOfAvailableRooms > 0)
+            {
+                while (roomsAvailable[roomIndex] == 0)
+                {
+                    roomIndex = UnityEngine.Random.Range(0, roomPrefabs.Length);
+                }
+            }
+
+            // If we are at the last room or there are no more available rooms
+            if (i == rooms.Length - 1 || numberOfAvailableRooms == 0)
+            {
+                if (finishingRoom != null)
+                {
+                    roomBounds = finishingRoom.GetComponentInChildren<Tilemap>().cellBounds;
+
+                    rooms[i].SetupRoom(roomBounds, finishingRoom, columns, rows, corridors[i - 1]);
+                }
+                else
+                {
+                    roomBounds = roomPrefabs[roomIndex].roomPrefab.GetComponentInChildren<Tilemap>().cellBounds;
+
+                    rooms[i].SetupRoom(roomBounds, roomPrefabs[roomIndex].roomPrefab, columns, rows, corridors[i - 1]);
+                }
+
+                break;
+            }
+            else
+            {
+                roomBounds = roomPrefabs[roomIndex].roomPrefab.GetComponentInChildren<Tilemap>().cellBounds;
+                rooms[i].SetupRoom(roomBounds, roomPrefabs[roomIndex].roomPrefab, columns, rows, corridors[i - 1]);
+                roomsAvailable[roomIndex]--;
+            }
 
             // If we haven't reached the end of the corridors array...
             if (i < corridors.Length)

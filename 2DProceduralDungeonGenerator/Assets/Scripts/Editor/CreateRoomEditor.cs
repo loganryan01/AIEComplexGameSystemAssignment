@@ -132,6 +132,7 @@ public class CreateRoomEditor : EditorWindow
     private void PreviewAllTiles()
     {
         allTilesPreview = new GameObject("RoomPreview");
+        allTilesPreview.AddComponent<Grid>();
         
         PreviewFloor();
         PreviewWalls();
@@ -141,7 +142,7 @@ public class CreateRoomEditor : EditorWindow
         wallTiles.transform.SetParent(allTilesPreview.transform);
         additionalTilesPreview.transform.SetParent(allTilesPreview.transform);
 
-        allTilesPreview.transform.SetParent(GameObject.Find("Grid").transform);
+        //allTilesPreview.transform.SetParent(GameObject.Find("Grid").transform);
     }
 
     private void PreviewAdditionalTiles()
