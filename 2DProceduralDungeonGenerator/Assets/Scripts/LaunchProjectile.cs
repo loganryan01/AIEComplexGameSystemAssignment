@@ -28,4 +28,14 @@ public class LaunchProjectile : MonoBehaviour
             }
         }
     }
+
+    private void OnDestroy()
+    {
+        GameObject[] projectiles = GameObject.FindGameObjectsWithTag("Projectile");
+
+        foreach (var projectile in projectiles)
+        {
+            Destroy(projectile);
+        }
+    }
 }

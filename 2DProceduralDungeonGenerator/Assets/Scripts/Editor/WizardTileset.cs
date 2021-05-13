@@ -2,7 +2,7 @@
     File Name: WizardTileset.cs
     Purpose: Create a tile pallette for the room editor
     Author: Logan Ryan
-    Modified: 11/05/2021
+    Modified: 13/05/2021
 -------------------------------------------------------
     Copyright 2021 Logan Ryan
 -----------------------------------------------------*/
@@ -15,6 +15,7 @@ using System.IO;
 
 public class WizardTileset : ScriptableWizard
 {
+    [Header("Room Tiles")]
     public TileBase floorTile;
     public TileBase leftWallTile;
     public TileBase rightWallTile;
@@ -41,7 +42,7 @@ public class WizardTileset : ScriptableWizard
     [Header("Optional Tile")]
     public TileBase doorTile;
 
-    [MenuItem("DungeonGenerator/Set Tileset")]
+    [MenuItem("DungeonGenerator/Set Tileset", false, 0)]
     static void CreateWizard()
     {
         ScriptableWizard.DisplayWizard<WizardTileset>("Tileset", "Save");

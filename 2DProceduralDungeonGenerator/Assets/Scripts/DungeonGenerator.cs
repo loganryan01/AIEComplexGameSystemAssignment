@@ -32,12 +32,24 @@ public class DungeonGenerator : MonoBehaviour
         CORRIDOR = 2,
     }
 
+    [Header("Grid size")]
+    [Tooltip("Number of columns in the grid")]
     public int columns = 100;                               // Number of columns in the grid
+    [Tooltip("Number of rows in the grid")]
     public int rows = 100;                                  // Number of rows in the grid
-    public int numberOfRooms;                               // Number of rooms in the dungeon
+
+    [Header("Corridor controls")]
+    [Tooltip("Number of columns in the grid")]
     public IntRange corridorLength = new IntRange(3, 10);   // Lengths of the corridor
+
+    [Header("Room controls")]
+    [Tooltip("Number of rooms in the dungeon")]
+    public int numberOfRooms;                               // Number of rooms in the dungeon
+    [Tooltip("Starting room template")]
     public GameObject startingRoom;                         // Starting room template
+    [Tooltip("Finishing room template")]
     public GameObject finishingRoom;                        // Finishing room template
+    [Tooltip("Room templates")]
     public RoomTemplate[] roomPrefabs;                      // Room templates
 
     private bool success = false;                           // Dungeon was successfully created
