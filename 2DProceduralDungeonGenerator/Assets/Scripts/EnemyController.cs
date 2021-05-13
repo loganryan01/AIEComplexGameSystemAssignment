@@ -2,7 +2,7 @@
     File Name: EnemyController.cs
     Purpose: Control the enemy's in the game
     Author: Logan Ryan
-    Modified: 12/05/2021
+    Modified: 13/05/2021
 --------------------------------------------
     Copyright 2021 Logan Ryan
 ------------------------------------------*/
@@ -13,6 +13,7 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     public float speed = 10.0f;
+    public bool hasKey;
     [HideInInspector]
     public bool seePlayer = false;
     private GameObject player;
@@ -59,6 +60,11 @@ public class EnemyController : MonoBehaviour
             }
             else if (playerController.swordEquipped)
             {
+                if (hasKey)
+                {
+                    playerController.hasKey = true;
+                }
+                
                 Destroy(gameObject);
             }
         }

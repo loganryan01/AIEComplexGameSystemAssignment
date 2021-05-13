@@ -2,7 +2,7 @@
     File Name: PlayerController.cs
     Purpose: Control the player's character
     Author: Logan Ryan
-    Modified: 12/05/2021
+    Modified: 13/05/2021
 -------------------------------------------
     Copyright 2021 Logan Ryan
 -----------------------------------------*/
@@ -16,10 +16,13 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     Rigidbody2D rb;                             // Player's rigidbody
-    //public DungeonGenerator dungeonGenerator;   // The dungeon generator script
     public Sprite swordSprite;                  // Player's Image when they obtained the sword
     public Text coinText;                       // Text to display player's coins
+    public Image keyImage;                      // Image to display that the player has a key
+    public Image swordImage;                    // Image to display that the player has the sword
 
+    [HideInInspector]
+    public bool hasKey = false;                 // Does the player have a key
     [HideInInspector]
     public bool swordEquipped = false;
     [HideInInspector]
@@ -31,8 +34,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-
-        //gameObject.transform.position = new Vector2(dungeonGenerator.columns / 2, dungeonGenerator.rows / 2);
     }
 
     // Update is called once per frame
@@ -56,10 +57,20 @@ public class PlayerController : MonoBehaviour
 
         if (GetComponent<PlayerStats>().Health <= 0)
         {
-            Debug.Log("Game Over");
+            SceneManager.LoadScene("GameOver");
         }
 
         coinText.text = "Coins: " + coins.ToString();
+
+        if (hasKey)
+        {
+            keyImage.enabled = true;
+        }
+
+        if (swordEquipped)
+        {
+            swordImage.enabled = true;
+        }
     }
 
     private List<TileBase> CollisionDetection(Vector3Int worldToCellPosition, Grid parentGrid, Tilemap tilemap, out Vector3Int[] tilePositions)
@@ -125,12 +136,15 @@ public class PlayerController : MonoBehaviour
                 }
                 else if (tileList[i].name == "Exit")
                 {
-                    
                     if (swordEquipped)
                     {
-                        
                         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
                     }
+                }
+                else if (tileList[i].name == "HealingPotion")
+                {
+                    tilemap.SetTile(tilePositions[i], null);
+                    GetComponent<PlayerStats>().Heal(1);
                 }
             }
         }
@@ -154,6 +168,19 @@ public class PlayerController : MonoBehaviour
                 ResolveCollision(tileList, tilemap, tilePositions);
             }
         }
+
+        if (collision.gameObject.CompareTag("Projectile") && !invincible)
+        {
+            GetComponent<PlayerStats>().TakeDamage(1);
+            StartCoroutine(Invincible());
+        }
+
+        if (collision.gameObject.CompareTag("Door") && hasKey)
+        {
+            Destroy(collision.gameObject);
+            hasKey = false;
+            keyImage.enabled = false;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -161,12 +188,11 @@ public class PlayerController : MonoBehaviour
         if (collision.CompareTag("Room"))
         {
             GameObject[] enemiesInDungeon = GameObject.FindGameObjectsWithTag("Enemy");
-            List<GameObject> enemiesInRoom = new List<GameObject>();
 
             foreach (var enemy in enemiesInDungeon)
             {
                 Rect enemyRect = new Rect(enemy.transform.position, enemy.transform.localScale);
-                Rect roomRect = new Rect(collision.gameObject.transform.position, collision.gameObject.transform.GetComponent<BoxCollider2D>().size);
+                Rect roomRect = new Rect(collision.gameObject.transform.position, collision.gameObject.GetComponent<BoxCollider2D>().size);
 
                 if (enemyRect.Overlaps(roomRect))
                 {

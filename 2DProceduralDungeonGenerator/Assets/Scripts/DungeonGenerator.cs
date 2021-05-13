@@ -2,7 +2,7 @@
     File Name: DungeonGenerator.cs
     Purpose: Generate dungeons for the developer
     Author: Logan Ryan
-    Modified: 11/05/2021
+    Modified: 13/05/2021
 ------------------------------------------------
     Copyright 2021 Logan Ryan
 ----------------------------------------------*/
@@ -30,12 +30,6 @@ public class DungeonGenerator : MonoBehaviour
         NULL = 0,
         ROOM = 1,
         CORRIDOR = 2,
-    }
-
-    public struct MyStruct
-    {
-        public GameObject roomPrefab;
-        public int numberOfRooms;
     }
 
     public int columns = 100;                               // Number of columns in the grid
@@ -585,6 +579,7 @@ public class DungeonGenerator : MonoBehaviour
 
                                     if (corridorTopRightCorner == corridorBottomLeftCorner)
                                     {
+                                        tileGridForWalls.GetComponent<TilemapRenderer>().sortingOrder = 4;
                                         tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[15]);
                                     }
                                 }
