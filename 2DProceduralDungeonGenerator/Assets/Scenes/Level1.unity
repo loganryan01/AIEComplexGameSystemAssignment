@@ -219,10 +219,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columns: 100
   rows: 100
-  numberOfRooms: 10
   corridorLength:
     m_Min: 3
     m_Max: 10
+  numberOfRooms: 10
   startingRoom: {fileID: 6966980606959417592, guid: befd1b8a130606749b4958784371cc3d, type: 3}
   finishingRoom: {fileID: 4792641168175808493, guid: eece3f2cc7676784fbd24106679d6b48, type: 3}
   roomPrefabs:
@@ -230,6 +230,20 @@ MonoBehaviour:
     numberOfRooms: 1
   - roomPrefab: {fileID: 3679553703571667119, guid: f41d0d9528ee7294fb147ded2397ecf2, type: 3}
     numberOfRooms: 2
+  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
+    numberOfRooms: 1
+  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
+    numberOfRooms: 1
+  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
+    numberOfRooms: 1
+  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
+    numberOfRooms: 1
+  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
+    numberOfRooms: 1
+  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
+    numberOfRooms: 1
+  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
+    numberOfRooms: 1
   - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
     numberOfRooms: 1
 --- !u!4 &67121351

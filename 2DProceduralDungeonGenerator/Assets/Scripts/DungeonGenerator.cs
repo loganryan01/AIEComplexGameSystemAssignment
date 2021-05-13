@@ -14,6 +14,13 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+public class LabeledArrayAttribute : PropertyAttribute
+{
+    public readonly string[] names;
+    public LabeledArrayAttribute(string[] names) { this.names = names; }
+    public LabeledArrayAttribute(Type enumType) { names = Enum.GetNames(enumType); }
+}
+
 [Serializable]
 public class RoomTemplate
 {
@@ -49,7 +56,8 @@ public class DungeonGenerator : MonoBehaviour
     public GameObject startingRoom;                         // Starting room template
     [Tooltip("Finishing room template")]
     public GameObject finishingRoom;                        // Finishing room template
-    [Tooltip("Room templates")]
+    [Tooltip("Other rooms to be created for the dungeon")]
+    [LabeledArray(new string[] {"Room 1", "Room 2", "Room 3" })]
     public RoomTemplate[] roomPrefabs;                      // Room templates
 
     private bool success = false;                           // Dungeon was successfully created
