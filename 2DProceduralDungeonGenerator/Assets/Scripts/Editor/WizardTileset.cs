@@ -2,7 +2,7 @@
     File Name: WizardTileset.cs
     Purpose: Create a tile pallette for the room editor
     Author: Logan Ryan
-    Modified: 13/05/2021
+    Modified: 14/05/2021
 -------------------------------------------------------
     Copyright 2021 Logan Ryan
 -----------------------------------------------------*/
@@ -16,32 +16,52 @@ using System.IO;
 public class WizardTileset : ScriptableWizard
 {
     [Header("Room Tiles")]
+    [Tooltip("The floor tile for the dungeon")]
     public TileBase floorTile;
+    [Tooltip("The left wall tile for the room and vertical corridors")]
     public TileBase leftWallTile;
+    [Tooltip("The right wall for the room and vertical corridors")]
     public TileBase rightWallTile;
+    [Tooltip("The top wall for the room and horizontal corridors")]
     public TileBase topWallTile;
+    [Tooltip("The bottom wall for the room and horizontal corridors")]
     public TileBase bottomWallTile;
+    [Tooltip("The top left corner tile for the room")]
     public TileBase topLeftCornerWallTile;
+    [Tooltip("The top right corner tile for the room")]
     public TileBase topRightCornerWallTile;
+    [Tooltip("The bottom left corner tile for the room")]
     public TileBase bottomLeftCornerWallTile;
+    [Tooltip("The bottom right corner tile for the room")]
     public TileBase bottomRightCornerWallTile;
+    [Tooltip("The void for the dungeon")]
     public TileBase voidTile;
 
     [Header("Horizontal Corridor Tiles")]
+    [Tooltip("The top left corner tile for horizontal corridor")]
     public TileBase horizontalCorridorTopLeftTile;
+    [Tooltip("The top right corner tile for horizontal corridor")]
     public TileBase horizontalCorridorTopRightTile;
+    [Tooltip("The bottom left corner tile for horizontal corridor")]
     public TileBase horizontalCorridorBottomLeftTile;
+    [Tooltip("The bottom right corner tile for horizontal corridor")]
     public TileBase horizontalCorridorBottomRightTile;
 
     [Header("Vertical Corridor Tiles")]
+    [Tooltip("The top left corner tile for vertical corridor")]
     public TileBase verticalCorridorTopLeftTile;
+    [Tooltip("The top right corner tile for vertical corridor")]
     public TileBase verticalCorridorTopRightTile;
+    [Tooltip("The bottom left corner tile for vertical corridor")]
     public TileBase verticalCorridorBottomLeftTile;
+    [Tooltip("The bottom right corner tile for vertical corridor")]
     public TileBase verticalCorridorBottomRightTile;
 
     [Header("Optional Tile")]
+    [Tooltip("The door tiles for the dungeon")]
     public TileBase doorTile;
 
+    // Create scriptable wizard
     [MenuItem("DungeonGenerator/Set Tileset", false, 0)]
     static void CreateWizard()
     {
@@ -50,37 +70,32 @@ public class WizardTileset : ScriptableWizard
 
     private void OnWizardUpdate()
     {
-        if (floorTile == null)
-            errorString = "There is no floor tile";
-        else if (leftWallTile == null)
-            errorString = "There is no left wall tile";
-        else if (rightWallTile == null)
-            errorString = "There is no right wall tile";
-        else if (topWallTile == null)
-            errorString = "There is no top wall tile";
-        else if (bottomWallTile == null)
-            errorString = "There is no bottom wall tile";
-        else if (topLeftCornerWallTile == null)
-            errorString = "There is no top left corner wall tile";
-        else if (topRightCornerWallTile == null)
-            errorString = "There is no top right corner wall tile";
-        else if (bottomLeftCornerWallTile == null)
-            errorString = "There is no bottom left corner wall tile";
-        else if (bottomRightCornerWallTile == null)
-            errorString = "There is no bottom right corner wall tile";
-        else if (voidTile == null)
-            errorString = "There is no void tile";
+        // If the scriptable wizard is missing a tile ...
+        if (floorTile == null || leftWallTile == null || rightWallTile == null || topWallTile == null ||
+            bottomWallTile == null || topLeftCornerWallTile == null || topRightCornerWallTile == null ||
+            bottomLeftCornerWallTile == null || bottomRightCornerWallTile == null|| voidTile == null ||
+            horizontalCorridorTopLeftTile == null || horizontalCorridorTopRightTile == null || horizontalCorridorBottomLeftTile == null ||
+            horizontalCorridorBottomRightTile == null || verticalCorridorTopLeftTile == null || verticalCorridorTopRightTile == null ||
+            verticalCorridorBottomLeftTile == null || verticalCorridorBottomRightTile == null)
+        {
+            // ... Write an error message saying that the wizard is missing tiles
+            errorString = "Missing tiles";
+        }
         else
+        {
             errorString = "";
+        }
     }
 
     private void OnWizardCreate()
     {
-        string path = "Assets/Resources/TilePalette.txt";
+        string path = "Assets/2DProceduralDungeonGenerator/Resources/TilePalette.txt";
         string doorTileName = "Null";
 
+        // If the user wants to have a door tile in the dungeon...
         if (doorTile != null)
         {
+            // ... Get the name of the door tile
             doorTileName = doorTile.name;
         }
 
@@ -104,6 +119,7 @@ public class WizardTileset : ScriptableWizard
                            verticalCorridorBottomRightTile.name,
                            doorTileName };
 
+        // Write the names into a text file as a tile palette
         StreamWriter writer = new StreamWriter(path, false);
         foreach (string name in names)
         {
@@ -112,6 +128,7 @@ public class WizardTileset : ScriptableWizard
 
         writer.Close();
 
+        // Save the text file 
         AssetDatabase.ImportAsset(path);
     }
 }

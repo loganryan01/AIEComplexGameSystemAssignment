@@ -232,20 +232,6 @@ MonoBehaviour:
     numberOfRooms: 2
   - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
     numberOfRooms: 1
-  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
-    numberOfRooms: 1
-  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
-    numberOfRooms: 1
-  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
-    numberOfRooms: 1
-  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
-    numberOfRooms: 1
-  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
-    numberOfRooms: 1
-  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
-    numberOfRooms: 1
-  - roomPrefab: {fileID: 1934602423773837388, guid: eff8297e40c7d4c4dbfb6b06af426230, type: 3}
-    numberOfRooms: 1
 --- !u!4 &67121351
 Transform:
   m_ObjectHideFlags: 0
