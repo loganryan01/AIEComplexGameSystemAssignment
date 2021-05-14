@@ -45,7 +45,7 @@ public class DungeonGenerator : MonoBehaviour
     public int rows = 100;                                  // Number of rows in the grid
 
     [Header("Corridor controls")]
-    [Tooltip("Number of columns in the grid")]
+    [Tooltip("Lengths of the corridors")]
     public IntRange corridorLength = new IntRange(3, 10);   // Lengths of the corridor
 
     [Header("Room controls")]
