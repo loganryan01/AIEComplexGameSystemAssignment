@@ -2,7 +2,7 @@
     File Name: DungeonGenerator.cs
     Purpose: Generate dungeons for the developer
     Author: Logan Ryan
-    Modified: 13/05/2021
+    Modified: 14/05/2021
 ------------------------------------------------
     Copyright 2021 Logan Ryan
 ----------------------------------------------*/
@@ -70,27 +70,29 @@ public class DungeonGenerator : MonoBehaviour
     private string text;                                    // Line of text from the text file
     List<TileBase> tilePalette = new List<TileBase>();      // Tiles to use in the dungeon
 
+    // Generate a dungeon
     public void GenerateDungeon()
     {
+        // Locate the board holder of the dungeon
         if (boardHolder == null)
         {
             boardHolder = GameObject.Find("BoardHolder");
         }
 
+        // Destroy the original board holder, whenever a new dungeon is being generated
         if (boardHolder != null)
         {
             DestroyImmediate(boardHolder);
         }
 
+        // Create new board holder object
         boardHolder = new GameObject("BoardHolder");
         boardHolder.AddComponent<Grid>();
 
         // Get Tile Palette
-        if (tilePalette.Count == 0)
-        {
-            GetTilePalette();
-        }
+        GetTilePalette();
 
+        // Create a dungeon until it is successful
         do
         {
             SetupTilesArray();
@@ -101,11 +103,13 @@ public class DungeonGenerator : MonoBehaviour
             SetTilesValuesForCorridors();
         } while (!success);
 
+        // Once a dungeon is successfully created, instantiate the rooms, corridors and outer walls
         InstantiateRooms();
         InstantiateCorridors();
         InstantiateOuterWalls();
     }
 
+    // Setup the tiles jagged array
     void SetupTilesArray()
     {
         // Set the tiles jagged array to the correct width.
@@ -119,13 +123,16 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    // Create rooms and corridors for the dungeon
     void CreateRoomsAndCorridors()
     {
+        // Assume that the dungeon creation is a success
         success = true;
 
         int size = 0;
         int[] roomsAvailable = new int[roomPrefabs.Length];
 
+        // Check how many rooms are available to use in the dungeon creation
         for (int i = 0; i < roomPrefabs.Length; i++)
         {
             if (roomPrefabs[i].numberOfRooms > 0)
@@ -136,15 +143,20 @@ public class DungeonGenerator : MonoBehaviour
             roomsAvailable[i] = roomPrefabs[i].numberOfRooms;
         }
 
+        // If the user has a starting room and finishing room ...
         if (startingRoom != null && finishingRoom != null)
         {
+            // ... Increase the size by 2
             size += 2;
         }
+        // If the user has a starting room or finishing room ...
         else if (startingRoom != null || finishingRoom != null)
         {
+            // ... Increase the size by 1
             size += 1;
         }
 
+        // If the number of available rooms is less than the number of rooms to be in the dungeon...
         if (size < numberOfRooms)
         {
             // Create the rooms array with a size of the number of room prefabs
@@ -166,26 +178,32 @@ public class DungeonGenerator : MonoBehaviour
         rooms[0] = new Room();
         corridors[0] = new Corridor();
 
+        // Choose a random room prefab
         int roomIndex = UnityEngine.Random.Range(0, roomPrefabs.Length);
 
+        // If the chosen room prefab has is not available...
         while (roomsAvailable[roomIndex] == 0)
         {
+            // ... Choose a different room
             roomIndex = UnityEngine.Random.Range(0, roomPrefabs.Length);
         }
 
+        // Get the bounds of the chosen room
         BoundsInt roomBounds = roomPrefabs[roomIndex].roomPrefab.GetComponentInChildren<Tilemap>().cellBounds;
 
         // Setup the first room
         if (startingRoom != null)
         {
+            // If the user has a starting room, then use that rooms bounds.
             roomBounds = startingRoom.GetComponentInChildren<Tilemap>().cellBounds;
 
             rooms[0].SetupFirstRoom(roomBounds, startingRoom, columns, rows);
         }
         else
         {
+            // If not then use the chosen room prefab from earlier.
             rooms[0].SetupFirstRoom(roomBounds, roomPrefabs[roomIndex].roomPrefab, columns, rows);
-            roomsAvailable[0]--;
+            roomsAvailable[roomIndex]--;
         }
 
         // Setup the first corridor
@@ -197,6 +215,8 @@ public class DungeonGenerator : MonoBehaviour
             rooms[i] = new Room();
 
             // Setup the room based on the previous corridor.
+
+            // Choose a random room prefab
             roomIndex = UnityEngine.Random.Range(0, roomPrefabs.Length);
 
             int numberOfAvailableRooms = 0;
@@ -210,10 +230,13 @@ public class DungeonGenerator : MonoBehaviour
                 }
             }
 
+            // If there are available rooms...
             if (numberOfAvailableRooms > 0)
             {
+                // Check if the chosen room prefab is available...
                 while (roomsAvailable[roomIndex] == 0)
                 {
+                    // If not then choose another room prefab
                     roomIndex = UnityEngine.Random.Range(0, roomPrefabs.Length);
                 }
             }
@@ -221,6 +244,7 @@ public class DungeonGenerator : MonoBehaviour
             // If we are at the last room or there are no more available rooms
             if (i == rooms.Length - 1 || numberOfAvailableRooms == 0)
             {
+                // If the user has a finishing room template, then use that rooms bounds.
                 if (finishingRoom != null)
                 {
                     roomBounds = finishingRoom.GetComponentInChildren<Tilemap>().cellBounds;
@@ -229,6 +253,7 @@ public class DungeonGenerator : MonoBehaviour
                 }
                 else
                 {
+                    // If not then use the chosen room prefab from earlier.
                     roomBounds = roomPrefabs[roomIndex].roomPrefab.GetComponentInChildren<Tilemap>().cellBounds;
 
                     rooms[i].SetupRoom(roomBounds, roomPrefabs[roomIndex].roomPrefab, columns, rows, corridors[i - 1]);
@@ -238,6 +263,7 @@ public class DungeonGenerator : MonoBehaviour
             }
             else
             {
+                // If not, then continue creating rooms
                 roomBounds = roomPrefabs[roomIndex].roomPrefab.GetComponentInChildren<Tilemap>().cellBounds;
                 rooms[i].SetupRoom(roomBounds, roomPrefabs[roomIndex].roomPrefab, columns, rows, corridors[i - 1]);
                 roomsAvailable[roomIndex]--;
@@ -261,6 +287,7 @@ public class DungeonGenerator : MonoBehaviour
         CheckCorridor2CorridorCollision();
     }
 
+    // Check if 2 rooms overlap each other
     void CheckRoom2RoomCollision()
     {
         for (int i = 0; i < rooms.Length; i++)
@@ -272,62 +299,68 @@ public class DungeonGenerator : MonoBehaviour
 
                 if (room1Rect.Overlaps(room2Rect))
                 {
+                    // If they do then the creation of the dungeon has been unsuccessful
                     success = false;
                 }
             }
         }
     }
 
+    // Check if 2 corridors overlap each other
     void CheckCorridor2CorridorCollision()
     {
         for (int i = 0; i < corridors.Length; i++)
         {
             for (int j = i + 1; j < corridors.Length; j++)
             {
-                Rect room1Rect = new Rect();
+                Rect corridor1Rect = new Rect();
 
+                // Depending on the direction of the corridor...
                 switch (corridors[i].direction)
                 {
+                    // Get the corridors rectangle
                     case Direction.North:
-                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos + 1, 3, corridors[i].corridorLength - 1);
+                        corridor1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos + 1, 3, corridors[i].corridorLength - 1);
                         break;
                     case Direction.East:
-                        room1Rect = new Rect(corridors[i].startXPos + 1, corridors[i].startYPos, corridors[i].corridorLength - 1, 3);
+                        corridor1Rect = new Rect(corridors[i].startXPos + 1, corridors[i].startYPos, corridors[i].corridorLength - 1, 3);
                         break;
                     case Direction.South:
-                        room1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos - 1, 3, corridors[i].corridorLength - 1);
+                        corridor1Rect = new Rect(corridors[i].startXPos, corridors[i].startYPos - 1, 3, corridors[i].corridorLength - 1);
                         break;
                     case Direction.West:
-                        room1Rect = new Rect(corridors[i].startXPos - 1, corridors[i].startYPos, corridors[i].corridorLength - 1, 3);
+                        corridor1Rect = new Rect(corridors[i].startXPos - 1, corridors[i].startYPos, corridors[i].corridorLength - 1, 3);
                         break;
                 }
 
-                Rect room2Rect = new Rect();
+                Rect corridor2Rect = new Rect();
 
                 switch (corridors[j].direction)
                 {
                     case Direction.North:
-                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos + 1, 3, corridors[j].corridorLength - 1);
+                        corridor2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos + 1, 3, corridors[j].corridorLength - 1);
                         break;
                     case Direction.East:
-                        room2Rect = new Rect(corridors[j].startXPos + 1, corridors[j].startYPos, corridors[j].corridorLength - 1, 3);
+                        corridor2Rect = new Rect(corridors[j].startXPos + 1, corridors[j].startYPos, corridors[j].corridorLength - 1, 3);
                         break;
                     case Direction.South:
-                        room2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos - 1, 3, corridors[j].corridorLength - 1);
+                        corridor2Rect = new Rect(corridors[j].startXPos, corridors[j].startYPos - 1, 3, corridors[j].corridorLength - 1);
                         break;
                     case Direction.West:
-                        room2Rect = new Rect(corridors[j].startXPos - 1, corridors[j].startYPos, corridors[j].corridorLength - 1, 3);
+                        corridor2Rect = new Rect(corridors[j].startXPos - 1, corridors[j].startYPos, corridors[j].corridorLength - 1, 3);
                         break;
                 }
 
-                if (room1Rect.Overlaps(room2Rect))
+                if (corridor1Rect.Overlaps(corridor2Rect))
                 {
+                    // If they do then the creation of the dungeon has been unsuccessful
                     success = false;
                 }
             }
         }
     }
 
+    // Set the values for the rooms in the tile jagged array
     void SetTilesValuesForRooms()
     {
         // Go through all the rooms...
@@ -348,7 +381,8 @@ public class DungeonGenerator : MonoBehaviour
                     if (xCoord < 0 || xCoord >= tiles.Length ||
                         yCoord < 0 || yCoord >= tiles.Length)
                     {
-
+                        // If the room goes outside the tile array,
+                        // Then the dungeon creation was unsuccessful
                         success = false;
                         return;
                     }
@@ -359,6 +393,7 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    // Set the values for the corridors in the tile jagged array
     void SetTilesValuesForCorridors()
     {
         // Go through every corridor...
@@ -404,6 +439,7 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    // Create the room game objects
     void InstantiateRooms()
     {
         for (int i = 0; i < rooms.Length; i++)
@@ -416,6 +452,8 @@ public class DungeonGenerator : MonoBehaviour
                 switch (corridors[i].direction)
                 {
                     // Get the starting position of the corridors
+                    // and remove the wall at the start of the corridor
+                    // If the user has a door tile, then set the door tile at the start of the corridor
                     case Direction.North:
                         Vector3Int northCorridorPosition = new Vector3Int(corridors[i].startXPos, corridors[i].startYPos, 0);
                         Vector3Int northCorridorCellPosition = roomWallsTilemap.WorldToCell(northCorridorPosition);
@@ -446,10 +484,11 @@ public class DungeonGenerator : MonoBehaviour
             if (i > 0)
             {
                 // Get the end position of the corridors
+                // and remove the wall at the start of the corridor
+                // If the user has a door tile, then set the door tile at the end of the corridor
                 switch (rooms[i].enteringDirection)
                 {
                     case Direction.North:
-                        // Get the south face of the room
                         Vector3Int northCorridorPosition = new Vector3Int(corridors[i - 1].EndPositionX, corridors[i - 1].EndPositionY - 1, 0);
                         Vector3Int northCorridorCellPosition = roomWallsTilemap.WorldToCell(northCorridorPosition);
                         int northCorridorExitXPosition = northCorridorCellPosition.x + 1;
@@ -462,7 +501,6 @@ public class DungeonGenerator : MonoBehaviour
                         roomWallsTilemap.SetTile(new Vector3Int(eastCorridorCellPosition.x, eastCorridorExitYPosition, 0), tilePalette[18]);
                         break;
                     case Direction.South:
-                        // Get the north face of the room
                         Vector3Int southCorridorPosition = new Vector3Int(corridors[i - 1].EndPositionX, corridors[i - 1].EndPositionY, 0);
                         Vector3Int southCorridorCellPosition = roomWallsTilemap.WorldToCell(southCorridorPosition);
                         int southCorridorExitYPosition = southCorridorCellPosition.x + 1;
@@ -480,8 +518,10 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    // Create the vertical corridor game objects
     void InstantiateVerticalCorridors(GameObject tileGridForFloors, GameObject tileGridForWalls, Corridor corridor, int index = 0)
     {
+        // Get the corridors starting position
         int corridorStartXPos = 0;
         int corridorStartYPos = 0;
 
@@ -496,6 +536,7 @@ public class DungeonGenerator : MonoBehaviour
             corridorStartYPos = corridor.EndPositionY;
         }
 
+        // Set the tiles in the floor tilemap to be floors
         for (int y = 0; y < corridor.corridorLength; y++)
         {
             tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(1, y, 0), tilePalette[0]);
@@ -515,6 +556,7 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         Vector3Int roomTopLeftCorner = new Vector3Int(rooms[j].xPos, rooms[j].yPos + rooms[j].height - 1, 0);
 
+                        // If it is change it to a left wall tile
                         if (corridorBottomLeftCorner == roomTopLeftCorner)
                         {
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[1]);
@@ -522,6 +564,7 @@ public class DungeonGenerator : MonoBehaviour
                         }
                         else if (j == rooms.Length - 1)
                         {
+                            // Otherwise, set it to the bottom left corner of the vertical corridor
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[16]);
                         }
                     }
@@ -539,6 +582,7 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         Vector3Int roomBottomLeftCorner = new Vector3Int(rooms[j].xPos, rooms[j].yPos, 0);
 
+                        // If it is change it to a left wall tile
                         if (corridorTopLeftCorner == roomBottomLeftCorner)
                         {
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[1]);
@@ -546,6 +590,7 @@ public class DungeonGenerator : MonoBehaviour
                         }
                         else if (j == rooms.Length - 1)
                         {
+                            // Otherwise, set it to the top left corner of the vertical corridor
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[14]);
                         }
                     }
@@ -563,6 +608,7 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         Vector3Int roomTopRightCorner = new Vector3Int(rooms[j].xPos + rooms[j].width - 1, rooms[j].yPos + rooms[j].height - 1, 0);
 
+                        // If it is change it to a right wall tile
                         if (corridorBottomRightCorner == roomTopRightCorner)
                         {
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[2]);
@@ -570,6 +616,7 @@ public class DungeonGenerator : MonoBehaviour
                         }
                         else if (j == rooms.Length - 1)
                         {
+                            // Otherwise, set it to the bottom right corner of the vertical corridor
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[17]);
                         }
                     }
@@ -587,10 +634,12 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         Vector3Int roomBottomRightCorner = new Vector3Int(rooms[j].xPos + rooms[j].width - 1, rooms[j].yPos, 0);
 
+                        // If it is change it to a right wall tile
                         if (corridorTopRightCorner == roomBottomRightCorner)
                         {
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[2]);
 
+                            // If this corner is being overlapped by a horizontal corridor then change it to a corner tile
                             if (index > 0)
                             {
                                 if (corridors[index - 1].direction == Direction.West)
@@ -608,6 +657,7 @@ public class DungeonGenerator : MonoBehaviour
                         }
                         else if (j == rooms.Length - 1)
                         {
+                            // Otherwise, set it to the bottom right corner of the vertical corridor
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[15]);
                         }
                     }
@@ -615,11 +665,15 @@ public class DungeonGenerator : MonoBehaviour
                     continue;
                 }
 
+                // If the current selected tile is on the left side of the vertical corridor, 
+                // create a left wall tile
                 if (x == 0)
                 {
                     tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[1]);
                 }
 
+                // If the current selected tile is on the right side of the vertical corridor, 
+                // create a right wall tile
                 if (x == 2)
                 {
                     tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[2]);
@@ -628,8 +682,10 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    // Create the horizontal corridor game objects
     void InstantiateHorizontalCorridors(GameObject tileGridForFloors, GameObject tileGridForWalls, Corridor corridor)
     {
+        // Get the corridors starting position
         int corridorStartXPos = 0;
         int corridorStartYPos = 0;
 
@@ -644,6 +700,7 @@ public class DungeonGenerator : MonoBehaviour
             corridorStartYPos = corridor.EndPositionY;
         }
 
+        // Set the tiles in the floor tilemap to be floors
         for (int x = 0; x < corridor.corridorLength; x++)
         {
             tileGridForFloors.GetComponent<Tilemap>().SetTile(new Vector3Int(x, 1, 0), tilePalette[0]);
@@ -663,6 +720,7 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         Vector3Int roomBottomRightCorner = new Vector3Int(rooms[j].xPos + rooms[j].width - 1, rooms[j].yPos, 0);
 
+                        // If it is change it to a bottom wall tile
                         if (corridorBottomLeftCorner == roomBottomRightCorner)
                         {
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
@@ -670,6 +728,7 @@ public class DungeonGenerator : MonoBehaviour
                         }
                         else if (j == rooms.Length - 1)
                         {
+                            // Otherwise, set it to the bottom left corner of the horizontal corridor
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[12]);
                         }
                     }
@@ -687,6 +746,7 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         Vector3Int roomBottomLeftCorner = new Vector3Int(rooms[j].xPos, rooms[j].yPos, 0);
 
+                        // If it is change it to a bottom wall tile
                         if (corridorBottomRightCorner == roomBottomLeftCorner)
                         {
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
@@ -694,6 +754,7 @@ public class DungeonGenerator : MonoBehaviour
                         }
                         else if (j == rooms.Length - 1)
                         {
+                            // Otherwise, set it to the bottom right corner of the horizontal corridor
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[13]);
                         }
                     }
@@ -711,6 +772,7 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         Vector3Int roomTopRightCorner = new Vector3Int(rooms[j].xPos + rooms[j].width - 1, rooms[j].yPos + rooms[j].height - 1, 0);
 
+                        // If it is change it to a top wall tile
                         if (corridorTopLeftCorner == roomTopRightCorner)
                         {
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
@@ -718,6 +780,7 @@ public class DungeonGenerator : MonoBehaviour
                         }
                         else if (j == rooms.Length - 1)
                         {
+                            // Otherwise, set it to the top left corner of the horizontal corridor
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[10]);
                         }
                     }
@@ -735,6 +798,7 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         Vector3Int roomTopLeftCorner = new Vector3Int(rooms[j].xPos, rooms[j].yPos + rooms[j].height - 1, 0);
 
+                        // If it is change it to a top wall tile
                         if (corridorTopRightCorner == roomTopLeftCorner)
                         {
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
@@ -742,6 +806,7 @@ public class DungeonGenerator : MonoBehaviour
                         }
                         else if (j == rooms.Length - 1)
                         {
+                            // Otherwise, set it to the top right corner of the horizontal corridor
                             tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[11]);
                         }
                     }
@@ -749,11 +814,15 @@ public class DungeonGenerator : MonoBehaviour
                     continue;
                 }
 
+                // If the current selected tile is on the bottom side of the horizontal corridor, 
+                // create a bottom wall tile
                 if (y == 0)
                 {
                     tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[4]);
                 }
 
+                // If the current selected tile is on the top side of the horizontal corridor, 
+                // create a top wall tile
                 if (y == 2)
                 {
                     tileGridForWalls.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[3]);
@@ -762,10 +831,13 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    // Create the corridor game objects
     void InstantiateCorridors()
     {
+        // Foreach corridor in the dungeon...
         for (int i = 0; i < corridors.Length; i++)
         {
+            // Create a corridor game object with 2 different tilemaps. One for floor and one for wall
             GameObject corridorGameObject = new GameObject("Corridor " + i);
 
             GameObject tileGridForFloors = new GameObject("Floors");
@@ -778,6 +850,8 @@ public class DungeonGenerator : MonoBehaviour
             tileGridForWalls.AddComponent<TilemapCollider2D>();
             tileGridForWalls.GetComponent<TilemapRenderer>().sortingOrder = 3;
 
+            // If the direction of the corridor is going north or south then create a vertical corridor
+            // or if the direction of the corridor is going east or west then create a horizontal corridor
             switch (corridors[i].direction)
             {
                 case Direction.North:
@@ -794,10 +868,14 @@ public class DungeonGenerator : MonoBehaviour
                     break;
             }
 
+            // Set the tilemaps to be the child of the corridor game object
             tileGridForFloors.transform.SetParent(corridorGameObject.transform);
             tileGridForWalls.transform.SetParent(corridorGameObject.transform);
+
+            // Set the corridor game object to be the child of the board holder
             corridorGameObject.transform.SetParent(boardHolder.transform);
 
+            // Place the corridors in the correct positions
             switch (corridors[i].direction)
             {
                 case Direction.North:
@@ -816,33 +894,47 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    // Create the outer walls for the dungeon
     void InstantiateOuterWalls()
     {
+        // Create the tilemap object for the outer walls of the dungeon
         GameObject tilemapForVoidTiles = new GameObject("VoidTiles");
         tilemapForVoidTiles.AddComponent<Tilemap>();
         tilemapForVoidTiles.AddComponent<TilemapRenderer>();
         tilemapForVoidTiles.GetComponent<TilemapRenderer>().sortingOrder = -1;
 
-
+        // Go through the tile jagged array
         for (int x = 0; x < rows; x++)
         {
             for (int y = 0; y < columns; y++)
             {
+                // If the tile type is null
                 if (tiles[x][y] == TileType.NULL)
                 {
+                    // Set it to be a void tile
                     tilemapForVoidTiles.GetComponent<Tilemap>().SetTile(new Vector3Int(x, y, 0), tilePalette[9]);
                 }
             }
         }
 
+        // Set the outer walls game object to be the child of the board holder
         tilemapForVoidTiles.transform.SetParent(boardHolder.transform);
     }
 
+    // Get the tile palette for the room
     private void GetTilePalette()
     {
-        string path = "Assets/Resources/TilePalette.txt";
+        // If there is already a tile palette saved...
+        if (tilePalette.Count > 0)
+        {
+            // ... Clear the tile palette list
+            tilePalette.Clear();
+        }
+        
+        string path = "Assets/2DProceduralDungeonGenerator/Resources/TilePalette.txt";
         reader = new StreamReader(path);
 
+        // While the text string is not empty...
         while ((text = reader.ReadLine()) != null)
         {
             if (text == "Null")
@@ -850,11 +942,13 @@ public class DungeonGenerator : MonoBehaviour
                 tilePalette.Add(null);
             }
 
-            // Set Tile's
+            // Find the tile GUID in the asset database
             string[] results = AssetDatabase.FindAssets(text + " t:Tile");
 
+            // Using that GUID
             foreach (string guid in results)
             {
+                // Find the tile and add it to the tile palette list
                 string tilePath = AssetDatabase.GUIDToAssetPath(guid);
                 var asset = (TileBase)AssetDatabase.LoadAssetAtPath(tilePath, typeof(TileBase));
 
@@ -868,4 +962,3 @@ public class DungeonGenerator : MonoBehaviour
 
 }
 #endif
-
