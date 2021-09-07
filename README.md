@@ -3,17 +3,22 @@ A dungeon generator that is used to create dungeons and rooms for 2D dungeon-cra
 
 ## Goals
 - Create a room editor for Unity
--	Implement basic platformer gameplay mechanics.
--	Implement sound effects and particle effects.
+-	Create a dungeon generator in Unity
+-	Use scriptable wizard and objects for experience
 
 ## Compile Instructions
 1. Clone the repo
-2. Open `Main Menu.scene` with Unity 2020.1.10f
+2. Open `MainMenu.scene` with Unity 2020.1.10f
 3. Go to File > Build Settings
 4. Drag in the following scenes from the Scenes folder in the order:
   - Main Menu
-  - My Game
-  - Victory Scene
+  - Level 1
+  - Level 2
+  - Level 3
+  - Level 4
+  - Level 5
+  - Game Complete
+  - Game Over
   
 ### Windows and web
 If you are building for windows and/or web, 
