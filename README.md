@@ -27,4 +27,4 @@ If you are building for windows and/or web,
 ## Credits
  - **Unity:** A 3D game engine, used to create this demo. <br> [https://www.unity.com](https://www.unity.com)
  - **Unity Asset Store:** A store containing free to use assets.
-   - 
+   - [https://assetstore.unity.com/packages/tools/gui/simple-heart-health-system-120676](https://assetstore.unity.com/packages/tools/gui/simple-heart-health-system-120676)
