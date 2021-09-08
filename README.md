@@ -28,6 +28,7 @@ If you are building for windows and/or web,
 4. Once game is finished compiling, the game will load
 
 ## Screenshots
+![Demo](/docs/DPG.gif "Demo")
 
 ## Credits
  - **Unity:** A 3D game engine, used to create this demo. <br> [https://www.unity.com](https://www.unity.com)
